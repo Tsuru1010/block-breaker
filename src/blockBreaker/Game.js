@@ -1,6 +1,11 @@
+import React, { useState } from 'react';
+import GameDisplay from './GameDisplay.js';
+
 const Game = () => {
     return (
-        <div>test_test_test</div>
+        <div>
+            <GameDisplay />
+        </div>
     );
 }
 export default Game;

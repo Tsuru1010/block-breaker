@@ -1,5 +1,4 @@
-import Game from './blockBleaker/Game';
-import './App.css';
+import Game from './blockBreaker/Game.js';
 
 function App() {
   return (
