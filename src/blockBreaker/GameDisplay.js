@@ -17,10 +17,10 @@ const GameDisplay = () => {
 
   const [startedFlag, setStartedFlag] = useState(false);
   //ボール速度絶対値（x軸方向）
-  const [velocityX, setVelocityX] = useState(1);
+  const [velocityX, setVelocityX] = useState(0);
   
   //ボール速度絶対値（y軸方向）
-  const [velocityY, setVelocityY] = useState(1);
+  const [velocityY, setVelocityY] = useState(0);
 
   const Ball = () => {
     
@@ -37,20 +37,18 @@ const GameDisplay = () => {
     const [moveYflag, setmoveYflag] = useState(false);
   
     useEffect(() => {
-      setVelocityX(velocity.x);
-      setVelocityY(velocity.y);
   
       // 端に行ったら方向を逆にする
-      if (y == 0) {
+      if (y <= 0) {
         setmoveYflag(true);
       }
-      if (x == screenWidth - ballSize) {
+      if (x >= screenWidth - ballSize) {
         setmoveXflag(false);
       }
-      if (y == screenHeight - ballSize) {
+      if (y >= screenHeight - ballSize) {
         setmoveYflag(false);
       }
-      if (x == 0) {
+      if (x <= 0) {
         setmoveXflag(true);
       }
   
@@ -58,14 +56,14 @@ const GameDisplay = () => {
       const step = setTimeout(() => 
         {
           if (moveXflag) {
-            setX(x + 1);
+            setX(x + velocityX);
           } else {
-            setX(x - 1);
+            setX(x - velocityX);
           }
           if (moveYflag) {
-            setY(y + 1);
+            setY(y + velocityY);
             } else {
-              setY(y - 1);
+              setY(y - velocityY);
             }
         }
       , 10);
@@ -92,14 +90,14 @@ const GameDisplay = () => {
     if (startedFlag === true){
       return;
     } else {
-       setStartedFlag(true);
+      setStartedFlag(true);
       setVelocityX(1);
       setVelocityY(1);
     }
   }
 
   return (
-      <div style={screenStyle}>
+      <div style={screenStyle} onClick={setVelocity}>
         <Ball />
       </div>
   );
