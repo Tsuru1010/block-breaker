@@ -15,7 +15,12 @@ const GameDisplay = () => {
     border:"solid 1px #000000"
   };
 
+  //ゲーム開始フラグ
   const [startedFlag, setStartedFlag] = useState(false);
+
+  //ゲーム終了フラグ
+  const [endFlag, setEndFlag] = useState(false);
+
   //ボール速度絶対値（x軸方向）
   const [velocityX, setVelocityX] = useState(0);
   
@@ -46,7 +51,7 @@ const GameDisplay = () => {
         setmoveXflag(false);
       }
       if (y >= screenHeight - ballSize) {
-        setmoveYflag(false);
+        moveEnd();
       }
       if (x <= 0) {
         setmoveXflag(true);
@@ -85,7 +90,7 @@ const GameDisplay = () => {
         <div style={screenStyle}></div>
     );
   }
-  
+
   function setVelocity(){
     if (startedFlag === true){
       return;
@@ -96,9 +101,16 @@ const GameDisplay = () => {
     }
   }
 
+  function moveEnd(){
+    setEndFlag(true);
+    setVelocityX(0);
+    setVelocityY(0);
+  }
+
   return (
       <div style={screenStyle} onClick={setVelocity}>
         <Ball />
+        {endFlag ? <p>GameOver</p> : <p></p>}
       </div>
   );
 }
