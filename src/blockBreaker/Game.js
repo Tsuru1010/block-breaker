@@ -101,11 +101,11 @@ const Game = () => {
       );
     }
   
-    const Slidebar = () => {
+    const Slidebar = (props) => {
       let barStyle = {  
         position: "absolute",
         top:initialBarPosition.y,
-        left: barX - barWidth/2,
+        left: props.barX - barWidth/2,
         height:barHeight + "px",
         width:barWidth + "px",
         backgroundColor:"#000000"
@@ -148,21 +148,25 @@ const Game = () => {
             moveYflag={props.moveYflag}
             setMoveYflag={props.setMoveYflag}
           />
-      <Slidebar />
+          <Slidebar
+            barX={props.barX}
+            setBarX={props.setBarX}
+          />
           {endFlag ? <p>GameOver</p> : <p></p>}
         </div>
     );
   }
 
-  function handleClickL(){
-    setBarX(barX - 1);
-  }
+  const ControlPanel = (props) => {
+    function handleClickL(){
+      props.setBarX(props.barX - 1);
+    }
+  
+    function handleClickR(){
+      props.setBarX(props.barX + 1);
+    }
+  
 
-  function handleClickR(){
-    setBarX(barX + 1);
-  }
-
-  const ControlPanel = () => {
     const panelStyle = {
       display:"float"
     }
@@ -190,8 +194,13 @@ const Game = () => {
         setMoveXflag={setMoveXflag}
         moveYflag={moveYflag}
         setMoveYflag={setMoveYflag}
+        barX={barX}
+        setBarX={setBarX}
       />
-      <ControlPanel/>
+      <ControlPanel
+        barX={barX}
+        setBarX={setBarX}
+      />
     </div>
   );
 }
