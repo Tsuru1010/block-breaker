@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useKey } from 'react-use';
+
+const screenWidth = 320;
+const screenHeight = 500;
+const ballSize = 10;
+const barHeight = 20;
+const barWidth = 80;
+const initialBallPosition = {x:160, y:470};
+const initialBarPosition = {x:160, y:480};
+
+let velocity = {x:0, y:0};
+let varBarX = initialBarPosition.x;
+
+/*
+window.isKeyDown = {};
+window.addEventListener('keydown', (e) => {
+  window.isKeyDown[`key_${e.key}`] = true;
+})
+window.addEventListener('keyup', (e) => {
+  window.isKeyDown[`key_${e.key}`] = false;
+})
+*/
 
 const Game = () => {
-  let velocity = {x:0, y:0};
-  const screenWidth = 320;
-  const screenHeight = 500;
-  const ballSize = 10;
-  const barHeight = 20;
-  const barWidth = 80;
-  const initialBallPosition = {x:160, y:470};
-  const initialBarPosition = {x:160, y:480};
   
   // スライドバー横位置
-  const [barX, setBarX] = useState(initialBarPosition.x);
+  const [barX, setBarX] = useState(varBarX);
     
   // ボール横位置
   const [x, setX] = useState(initialBallPosition.x);
@@ -37,6 +51,26 @@ const Game = () => {
   // 縦移動フラグ（true:下に移動、false:上に移動）
   const [moveYflag, setMoveYflag] = useState(false);
 
+  //ControlPanelコンポーネントのLボタンを参照するref
+  //const LbuttonRef = useRef(null);
+
+  //ControlPanelコンポーネントのRボタンを参照するref
+  //const RbuttonRef = useRef(null);
+
+  function handleClickL(){
+    setBarX(barX - 1);
+    varBarX--;
+  }
+
+  function handleClickR(){
+    setBarX(barX + 1);
+    varBarX++;
+    console.log("Rbutton Clicked. varBarX = " + varBarX);
+  }
+
+  //useKey('ArrowLeft', handleClickL);
+  //useKey('ArrowRight', handleClickR);
+
   const GameDisplay = (props) => {  
 
     const screenStyle = {
@@ -49,9 +83,8 @@ const Game = () => {
 
     
     const Ball = (props) => {
-
+      
       useEffect(() => {
-    
         // 端に行ったら方向を逆にする
         if (props.y <= 0) {
           props.setMoveYflag(true);
@@ -65,7 +98,12 @@ const Game = () => {
         if (props.x <= 0) {
           props.setMoveXflag(true);
         }
-    
+      }, [props.x, props.y, props])
+      
+      useEffect(() => {
+        //console.log("useEffect used.");
+        const { isKeyDown } = window;
+
         // 移動速度
         const step = setTimeout(() => 
           {
@@ -85,7 +123,7 @@ const Game = () => {
     
         return () => clearTimeout(step);
     
-        }, [props])
+      }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
     
       const ballStyle = {
         position: "absolute",
@@ -102,7 +140,7 @@ const Game = () => {
     }
   
     const Slidebar = (props) => {
-      let barStyle = {  
+      const barStyle = {  
         position: "absolute",
         top:initialBarPosition.y,
         left: props.barX - barWidth/2,
@@ -110,7 +148,23 @@ const Game = () => {
         width:barWidth + "px",
         backgroundColor:"#000000"
       }
-  
+      
+      useEffect(() => {
+        const handleKeyDown = (e) => {
+          switch (e.key) {
+            case 'ArrowLeft': handleClickL(); break;
+            case 'ArrowRight': handleClickR(); break;
+            default: break;
+          }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        }
+      }, [])
+
       return (
         <div style={barStyle}></div>
       )
@@ -158,14 +212,6 @@ const Game = () => {
   }
 
   const ControlPanel = (props) => {
-    function handleClickL(){
-      props.setBarX(props.barX - 1);
-    }
-  
-    function handleClickR(){
-      props.setBarX(props.barX + 1);
-    }
-  
 
     const panelStyle = {
       display:"float"
@@ -173,8 +219,8 @@ const Game = () => {
   
     return (
       <div style={panelStyle}>
-        <button onClick={handleClickL}>L</button>
-        <button onClick={handleClickR}>R</button>
+        <button onClick={props.handleClickL}>L</button>
+        <button onClick={props.handleClickR}>R</button>
       </div>
     );
   }
@@ -200,6 +246,8 @@ const Game = () => {
       <ControlPanel
         barX={barX}
         setBarX={setBarX}
+        handleClickL={handleClickL}
+        handleClickR={handleClickR}
       />
     </div>
   );
