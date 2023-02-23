@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useKey } from 'react-use';
 
 const screenWidth = 320;
 const screenHeight = 500;
@@ -11,16 +10,6 @@ const initialBarPosition = {x:160, y:480};
 
 let velocity = {x:0, y:0};
 let varBarX = initialBarPosition.x;
-
-/*
-window.isKeyDown = {};
-window.addEventListener('keydown', (e) => {
-  window.isKeyDown[`key_${e.key}`] = true;
-})
-window.addEventListener('keyup', (e) => {
-  window.isKeyDown[`key_${e.key}`] = false;
-})
-*/
 
 const Game = () => {
   
@@ -51,26 +40,129 @@ const Game = () => {
   // 縦移動フラグ（true:下に移動、false:上に移動）
   const [moveYflag, setMoveYflag] = useState(false);
 
-  //ControlPanelコンポーネントのLボタンを参照するref
-  //const LbuttonRef = useRef(null);
-
-  //ControlPanelコンポーネントのRボタンを参照するref
-  //const RbuttonRef = useRef(null);
-
   function handleClickL(){
-    setBarX(barX - 1);
-    varBarX--;
+    if (barX - 1 - barWidth/2 > 0){
+      setBarX(barX - 1);
+      if (startedFlag === false){
+        setX(x - 1);
+      }
+    }
   }
 
   function handleClickR(){
-    setBarX(barX + 1);
-    varBarX++;
-    console.log("Rbutton Clicked. varBarX = " + varBarX);
+    if (barX + 1 + barWidth/2 < screenWidth){
+      setBarX(barX + 1);
+      if (startedFlag === false){
+        setX(x + 1);
+      }
+    }
   }
 
-  //useKey('ArrowLeft', handleClickL);
-  //useKey('ArrowRight', handleClickR);
+  function setVelocity(){
+    if (startedFlag === true){
+      return;
+    } else {
+      setStartedFlag(true);
+      setVelocityX(1);
+      setVelocityY(1);
+    }
+  }
 
+  function moveEnd(){
+    setEndFlag(true);
+    setVelocityX(0);
+    setVelocityY(0);
+  }
+
+
+  //ボールのコンポーネント
+  const Ball = (props) => {
+      
+    useEffect(() => {
+      // 端に行ったら方向を逆にする
+      if (props.y <= 0) {
+        props.setMoveYflag(true);
+      }
+      if (props.x >= screenWidth - ballSize) {
+        props.setMoveXflag(false);
+      }
+      if (props.y >= screenHeight - ballSize) {
+        moveEnd();
+      }
+      if (props.x <= 0) {
+        props.setMoveXflag(true);
+      }
+    }, [props.x, props.y, props])
+    
+    useEffect(() => {
+      // 移動速度
+      const step = setTimeout(() => 
+        {
+          if (props.moveXflag) {
+            props.setX(props.x + velocityX);
+          } else {
+            props.setX(props.x - velocityX);
+          }
+          if (props.moveYflag) {
+            props.setY(props.y + velocityY);
+          } else {
+            props.setY(props.y - velocityY);
+          }
+
+        }
+      , 10);
+  
+      return () => clearTimeout(step);
+  
+    }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
+  
+    const ballStyle = {
+      position: "absolute",
+      top: y,
+      left: x,
+      width: ballSize + "px",
+      height: ballSize + "px",
+      backgroundColor:"#000000"
+    }
+  
+    return (
+        <div style={ballStyle}></div>
+    );
+  }
+
+  //スライドバー（ボールを打ち返すやつ）のコンポーネント
+  const Slidebar = (props) => {
+    const barStyle = {  
+      position: "absolute",
+      top:initialBarPosition.y,
+      left: props.barX - barWidth/2,
+      height:barHeight + "px",
+      width:barWidth + "px",
+      backgroundColor:"#000000"
+    }
+    
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        switch (e.key) {
+          case 'ArrowLeft': handleClickL(); break;
+          case 'ArrowRight': handleClickR(); break;
+          default: break;
+        }
+      }
+
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      }
+    }, [])
+
+    return (
+      <div style={barStyle}></div>
+    )
+  }
+
+  //ゲームディスプレイのコンポーネント
   const GameDisplay = (props) => {  
 
     const screenStyle = {
@@ -81,111 +173,6 @@ const Game = () => {
       border:"solid 1px #000000"
     };
 
-    
-    const Ball = (props) => {
-      
-      useEffect(() => {
-        // 端に行ったら方向を逆にする
-        if (props.y <= 0) {
-          props.setMoveYflag(true);
-        }
-        if (props.x >= screenWidth - ballSize) {
-          props.setMoveXflag(false);
-        }
-        if (props.y >= screenHeight - ballSize) {
-          moveEnd();
-        }
-        if (props.x <= 0) {
-          props.setMoveXflag(true);
-        }
-      }, [props.x, props.y, props])
-      
-      useEffect(() => {
-        //console.log("useEffect used.");
-        const { isKeyDown } = window;
-
-        // 移動速度
-        const step = setTimeout(() => 
-          {
-            if (props.moveXflag) {
-              props.setX(props.x + velocityX);
-            } else {
-              props.setX(props.x - velocityX);
-            }
-            if (props.moveYflag) {
-              props.setY(props.y + velocityY);
-            } else {
-              props.setY(props.y - velocityY);
-            }
-
-          }
-        , 10);
-    
-        return () => clearTimeout(step);
-    
-      }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
-    
-      const ballStyle = {
-        position: "absolute",
-        top: y,
-        left: x,
-        width: ballSize + "px",
-        height: ballSize + "px",
-        backgroundColor:"#000000"
-      }
-    
-      return (
-          <div style={ballStyle}></div>
-      );
-    }
-  
-    const Slidebar = (props) => {
-      const barStyle = {  
-        position: "absolute",
-        top:initialBarPosition.y,
-        left: props.barX - barWidth/2,
-        height:barHeight + "px",
-        width:barWidth + "px",
-        backgroundColor:"#000000"
-      }
-      
-      useEffect(() => {
-        const handleKeyDown = (e) => {
-          switch (e.key) {
-            case 'ArrowLeft': handleClickL(); break;
-            case 'ArrowRight': handleClickR(); break;
-            default: break;
-          }
-        }
-
-        window.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-          window.removeEventListener('keydown', handleKeyDown);
-        }
-      }, [])
-
-      return (
-        <div style={barStyle}></div>
-      )
-    }
-  
-    function setVelocity(){
-      if (startedFlag === true){
-        return;
-      } else {
-        setStartedFlag(true);
-        props.setVelocityX(1);
-        props.setVelocityY(1);
-      }
-    }
-  
-    function moveEnd(){
-      setEndFlag(true);
-      setVelocityX(0);
-      setVelocityY(0);
-    }
-  
     return (
         <div style={screenStyle} onClick={setVelocity}>
           <Ball
@@ -211,6 +198,7 @@ const Game = () => {
     );
   }
 
+  //操作盤のコンポーネント
   const ControlPanel = (props) => {
 
     const panelStyle = {
