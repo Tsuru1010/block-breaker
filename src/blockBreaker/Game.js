@@ -179,6 +179,15 @@ const Game = () => {
       }
     }, [])
 
+    
+    useEffect(() => {
+      // スライドバーの上面に当たったらy方向の向きを逆にする
+      if (props.y >= (screenHeight - ballSize - barHeight) && barX - barWidth/2 <= props.x && props.x <= barX + barWidth/2) {
+        props.setMoveYflag(false);
+      }
+    }, [props.x, props.y, props])
+    
+
     return (
       <div style={barStyle}></div>
     )
@@ -238,6 +247,9 @@ const Game = () => {
           <Slidebar
             barX={props.barX}
             setBarX={props.setBarX}
+            x={props.x}
+            y={props.y}
+            setMoveYflag={props.setMoveYflag}
           />
           {endFlag ? <p>GameOver</p> : <p></p>}
         </div>
