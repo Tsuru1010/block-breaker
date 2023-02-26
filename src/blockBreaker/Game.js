@@ -3,42 +3,32 @@ import React, { useState, useEffect, useRef } from 'react';
 const screenWidth = 320;
 const screenHeight = 500;
 const ballSize = 10;
-const barHeight = 20;
 const barWidth = 80;
+const barHeight = 20;
+const blockWidth = screenWidth/8;
+const blockHeight = 20;
 const initialBallPosition = {x:160, y:470};
 const initialBarPosition = {x:160, y:480};
 
 let velocity = {x:0, y:0};
-let varBarX = initialBarPosition.x;
 
 const Game = () => {
-  
-  // スライドバー横位置
-  const [barX, setBarX] = useState(varBarX);
-    
-  // ボール横位置
-  const [x, setX] = useState(initialBallPosition.x);
+  function initializeBlocksArray(blocksArray){
+    let blockLeftX;
+    let blockTopY;
+    let index;
 
-  // ボール縦位置
-  const [y, setY] = useState(initialBallPosition.y);
-  
-  //ゲーム開始フラグ
-  const [startedFlag, setStartedFlag] = useState(false);
-  
-  //ゲーム終了フラグ
-  const [endFlag, setEndFlag] = useState(false);
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 8; j++) {
+        blockLeftX = j * blockWidth;
+        blockTopY = i * blockHeight;
+        index = i*4 + j;
+        blocksArray.push({index:index, flag:true, blockLeftX:blockLeftX, blockTopY:blockTopY})
+      }
+    }
 
-  //ボール速度絶対値（x軸方向）
-  const [velocityX, setVelocityX] = useState(0);
-  
-  //ボール速度絶対値（y軸方向）
-  const [velocityY, setVelocityY] = useState(0);
-
-  // 横移動フラグ（true:右に移動、false:左に移動）
-  const [moveXflag, setMoveXflag] = useState(true);
-        
-  // 縦移動フラグ（true:下に移動、false:上に移動）
-  const [moveYflag, setMoveYflag] = useState(false);
+    return blocksArray;
+  }
 
   function handleClickL(){
     if (barX - 1 - barWidth/2 > 0){
@@ -73,7 +63,39 @@ const Game = () => {
     setVelocityX(0);
     setVelocityY(0);
   }
+  
+  let blocksArray = [];
 
+  blocksArray = initializeBlocksArray(blocksArray);
+
+  // スライドバー横位置
+  const [barX, setBarX] = useState(initialBarPosition.x);
+    
+  // ボール横位置
+  const [x, setX] = useState(initialBallPosition.x);
+
+  // ボール縦位置
+  const [y, setY] = useState(initialBallPosition.y);
+  
+  //ゲーム開始フラグ
+  const [startedFlag, setStartedFlag] = useState(false);
+  
+  //ゲーム終了フラグ
+  const [endFlag, setEndFlag] = useState(false);
+
+  //ボール速度絶対値（x軸方向）
+  const [velocityX, setVelocityX] = useState(0);
+  
+  //ボール速度絶対値（y軸方向）
+  const [velocityY, setVelocityY] = useState(0);
+
+  // 横移動フラグ（true:右に移動、false:左に移動）
+  const [moveXflag, setMoveXflag] = useState(true);
+        
+  // 縦移動フラグ（true:下に移動、false:上に移動）
+  const [moveYflag, setMoveYflag] = useState(false);
+
+  const [blocksStates, setBlocksStates] = useState(blocksArray);
 
   //ボールのコンポーネント
   const Ball = (props) => {
@@ -162,6 +184,23 @@ const Game = () => {
     )
   }
 
+  const Block = (props) => {
+    const blockStyle = {
+      display: props.flag ? "inline-block" : "none",
+      position: "absolute",
+      top: props.blockTopY,
+      left: props.blockLeftX,
+      height: blockHeight + "px",
+      width: blockWidth + "px",
+      backgroundColor: "#00ff00",
+      border: "solid 1px #ff0000",
+    }
+
+    return (
+      <div style={blockStyle}></div>
+    )
+  }
+
   //ゲームディスプレイのコンポーネント
   const GameDisplay = (props) => {  
 
@@ -175,6 +214,13 @@ const Game = () => {
 
     return (
         <div style={screenStyle} onClick={setVelocity}>
+          {props.blocksStates.map((value) => {
+            return (<Block 
+                      flag={value.flag}
+                      blockTopY={value.blockTopY}
+                      blockLeftX={value.blockLeftX} 
+                    />);
+          })}
           <Ball
             x={props.x}
             setX={props.setX}
@@ -230,6 +276,8 @@ const Game = () => {
         setMoveYflag={setMoveYflag}
         barX={barX}
         setBarX={setBarX}
+        blocksStates={blocksStates}
+        setBlocksStates={setBlocksStates}
       />
       <ControlPanel
         barX={barX}
