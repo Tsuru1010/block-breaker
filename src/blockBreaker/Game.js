@@ -17,7 +17,8 @@ let flagsArray = [true, true, true, true, true, true, true, true,
                   true, true, true, true, true, true, true, true]
 
 const Game = () => {
-  function initializeBlocksArray(blocksArray, flagsArray){
+  function initializeBlocksArray(){
+    let blocksArray = [];
     let blockLeftX;
     let blockTopY;
     let index;
@@ -68,9 +69,7 @@ const Game = () => {
     setVelocityY(0);
   }
   
-  let blocksArray = [];
-  
-  blocksArray = initializeBlocksArray(blocksArray);
+  const blocksArray = initializeBlocksArray();
   
   // スライドバー横位置
   const [barX, setBarX] = useState(initialBarPosition.x);
