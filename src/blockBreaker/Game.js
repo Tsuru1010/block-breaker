@@ -11,9 +11,13 @@ const initialBallPosition = {x:160, y:470};
 const initialBarPosition = {x:160, y:480};
 
 let velocity = {x:0, y:0};
+let flagsArray = [true, true, true, true, true, true, true, true,
+                  true, true, true, true, true, true, true, true, 
+                  true, true, true, true, true, true, true, true, 
+                  true, true, true, true, true, true, true, true]
 
 const Game = () => {
-  function initializeBlocksArray(blocksArray){
+  function initializeBlocksArray(blocksArray, flagsArray){
     let blockLeftX;
     let blockTopY;
     let index;
@@ -22,8 +26,8 @@ const Game = () => {
       for (let j = 0; j < 8; j++) {
         blockLeftX = j * blockWidth;
         blockTopY = i * blockHeight;
-        index = i*4 + j;
-        blocksArray.push({index:index, flag:true, blockLeftX:blockLeftX, blockTopY:blockTopY})
+        index = i*8 + j;
+        blocksArray.push({index:index, blockLeftX:blockLeftX, blockTopY:blockTopY});
       }
     }
 
@@ -65,9 +69,9 @@ const Game = () => {
   }
   
   let blocksArray = [];
-
+  
   blocksArray = initializeBlocksArray(blocksArray);
-
+  
   // スライドバー横位置
   const [barX, setBarX] = useState(initialBarPosition.x);
     
@@ -95,7 +99,7 @@ const Game = () => {
   // 縦移動フラグ（true:下に移動、false:上に移動）
   const [moveYflag, setMoveYflag] = useState(false);
 
-  const [blocksStates, setBlocksStates] = useState(blocksArray);
+  const [flagsStates, setFlagsStates] = useState(flagsArray);
 
   //ボールのコンポーネント
   const Ball = (props) => {
@@ -193,7 +197,9 @@ const Game = () => {
     )
   }
 
+  //ブロック一つのコンポーネント
   const Block = (props) => {
+    
     const blockStyle = {
       display: props.flag ? "inline-block" : "none",
       position: "absolute",
@@ -204,6 +210,43 @@ const Game = () => {
       backgroundColor: "#00ff00",
       border: "solid 1px #ff0000",
     }
+
+    useEffect(() => {
+      
+      if (props.flag){
+        // ブロックに当たったら方向を逆にする
+      
+        //上端との衝突
+        if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize < props.blockLeftX + blockWidth) {
+          flagsArray[props.index] = false;
+          props.setFlagsStates(flagsArray);
+          props.setMoveYflag(false);
+        }
+
+        //左端との衝突
+        if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize < props.blockTopY + blockWidth) {
+          flagsArray[props.index] = false;
+          props.setFlagsStates(flagsArray);
+          props.setMoveXflag(false);
+        }
+
+        //下端との衝突
+        if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize < props.blockLeftX + blockWidth) {
+          flagsArray[props.index] = false;
+          props.setFlagsStates(flagsArray);
+          props.setMoveYflag(true);
+        }
+
+        //右端との衝突
+        if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize < props.blockTopY + blockWidth) {
+          flagsArray[props.index] = false;
+          props.setFlagsStates(flagsArray);
+          props.setMoveXflag(true);
+        }
+      }
+        
+    }, [props.x, props.y, props])
+    
 
     return (
       <div style={blockStyle}></div>
@@ -223,11 +266,17 @@ const Game = () => {
 
     return (
         <div style={screenStyle} onClick={setVelocity}>
-          {props.blocksStates.map((value) => {
-            return (<Block 
-                      flag={value.flag}
+          {blocksArray.map((value, key) => {
+            return (<Block
+                      index={value.index}
                       blockTopY={value.blockTopY}
-                      blockLeftX={value.blockLeftX} 
+                      blockLeftX={value.blockLeftX}
+                      flag={props.flagsStates[key]}
+                      setFlagsStates={props.setFlagsStates}
+                      x={props.x}
+                      y={props.y}
+                      setMoveXflag={props.setMoveXflag}
+                      setMoveYflag={props.setMoveYflag}
                     />);
           })}
           <Ball
@@ -288,8 +337,8 @@ const Game = () => {
         setMoveYflag={setMoveYflag}
         barX={barX}
         setBarX={setBarX}
-        blocksStates={blocksStates}
-        setBlocksStates={setBlocksStates}
+        flagsStates={flagsStates}
+        setFlagsStates={setFlagsStates}
       />
       <ControlPanel
         barX={barX}
