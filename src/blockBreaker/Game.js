@@ -216,28 +216,28 @@ const Game = () => {
         // ブロックに当たったら方向を逆にする
       
         //上端との衝突
-        if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize < props.blockLeftX + blockWidth) {
+        if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
           flagsArray[props.index] = false;
           props.setFlagsStates(flagsArray);
           props.setMoveYflag(false);
         }
 
         //左端との衝突
-        if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize < props.blockTopY + blockWidth) {
+        if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
           flagsArray[props.index] = false;
           props.setFlagsStates(flagsArray);
           props.setMoveXflag(false);
         }
 
         //下端との衝突
-        if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize < props.blockLeftX + blockWidth) {
+        if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
           flagsArray[props.index] = false;
           props.setFlagsStates(flagsArray);
           props.setMoveYflag(true);
         }
 
         //右端との衝突
-        if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize < props.blockTopY + blockWidth) {
+        if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
           flagsArray[props.index] = false;
           props.setFlagsStates(flagsArray);
           props.setMoveXflag(true);
