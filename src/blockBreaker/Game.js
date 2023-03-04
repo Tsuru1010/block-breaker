@@ -9,6 +9,7 @@ const blockWidth = screenWidth/8;
 const blockHeight = 20;
 const initialBallPosition = {x:160, y:470};
 const initialBarPosition = {x:160, y:480};
+const blocksArray = initializeBlocksArray();
 
 let velocity = {x:0, y:0};
 let flagsArray = [true, true, true, true, true, true, true, true,
@@ -16,60 +17,286 @@ let flagsArray = [true, true, true, true, true, true, true, true,
                   true, true, true, true, true, true, true, true, 
                   true, true, true, true, true, true, true, true]
 
-const Game = () => {
-  function initializeBlocksArray(){
-    let blocksArray = [];
-    let blockLeftX;
-    let blockTopY;
-    let index;
 
-    for (let i = 0; i < 4; i++) {
-      for (let j = 0; j < 8; j++) {
-        blockLeftX = j * blockWidth;
-        blockTopY = i * blockHeight;
-        index = i*8 + j;
-        blocksArray.push({index:index, blockLeftX:blockLeftX, blockTopY:blockTopY});
+function initializeBlocksArray(){
+  let blocksArray = [];
+  let blockLeftX;
+  let blockTopY;
+  let index;
+
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 8; j++) {
+      blockLeftX = j * blockWidth;
+      blockTopY = i * blockHeight;
+      index = i*8 + j;
+      blocksArray.push({index:index, blockLeftX:blockLeftX, blockTopY:blockTopY});
+    }
+  }
+
+  return blocksArray;
+}
+
+function handleClickL(barX, setBarX, startedFlag, setX, x) {
+  if (barX - 1 - barWidth/2 > 0){
+    setBarX(barX - 1);
+    if (startedFlag === false){
+      setX(x - 1);
+    }
+  }
+}
+
+function handleClickR(barX, setBarX, startedFlag, setX, x) {
+  if (barX + 1 + barWidth/2 < screenWidth){
+    setBarX(barX + 1);
+    if (startedFlag === false){
+      setX(x + 1);
+    }
+  }
+}
+
+function setVelocity(startedFlag, setStartedFlag, setVelocityX, setVelocityY) {
+  if (startedFlag === true){
+    return;
+  } else {
+    setStartedFlag(true);
+    setVelocityX(1);
+    setVelocityY(1);
+  }
+}
+
+function moveEnd(setEndFlag, setVelocityX, setVelocityY) {
+  setEndFlag(true);
+  setVelocityX(0);
+  setVelocityY(0);
+}
+
+//ボールのコンポーネント
+function Ball(props) {
+      
+  useEffect(() => {
+    // 端に行ったら方向を逆にする
+    if (props.y <= 0) {
+      props.setMoveYflag(true);
+    }
+    if (props.x >= screenWidth - ballSize) {
+      props.setMoveXflag(false);
+    }
+    if (props.y >= screenHeight - ballSize) {
+      moveEnd(props.setEndFlag, props.setVelocityX, props.setVelocityY);
+    }
+    if (props.x <= 0) {
+      props.setMoveXflag(true);
+    }
+  }, [props.x, props.y, props])
+  
+  useEffect(() => {
+    // 移動速度
+    const step = setTimeout(() => 
+      {
+        if (props.moveXflag) {
+          props.setX(props.x + props.velocityX);
+        } else {
+          props.setX(props.x - props.velocityX);
+        }
+        if (props.moveYflag) {
+          props.setY(props.y + props.velocityY);
+        } else {
+          props.setY(props.y - props.velocityY);
+        }
+
       }
-    }
+    , 10);
 
-    return blocksArray;
+    return () => clearTimeout(step);
+
+  }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
+
+  const ballStyle = {
+    position: "absolute",
+    top: props.y,
+    left: props.x,
+    width: ballSize + "px",
+    height: ballSize + "px",
+    backgroundColor:"#000000"
   }
 
-  function handleClickL(){
-    if (barX - 1 - barWidth/2 > 0){
-      setBarX(barX - 1);
-      if (startedFlag === false){
-        setX(x - 1);
-      }
-    }
-  }
+  return (
+      <div style={ballStyle}></div>
+  );
+}
 
-  function handleClickR(){
-    if (barX + 1 + barWidth/2 < screenWidth){
-      setBarX(barX + 1);
-      if (startedFlag === false){
-        setX(x + 1);
-      }
-    }
-  }
-
-  function setVelocity(){
-    if (startedFlag === true){
-      return;
-    } else {
-      setStartedFlag(true);
-      setVelocityX(1);
-      setVelocityY(1);
-    }
-  }
-
-  function moveEnd(){
-    setEndFlag(true);
-    setVelocityX(0);
-    setVelocityY(0);
+//スライドバー（ボールを打ち返すやつ）のコンポーネント
+function Slidebar(props) {
+  const barStyle = {  
+    position: "absolute",
+    top:initialBarPosition.y,
+    left: props.barX - barWidth/2,
+    height:barHeight + "px",
+    width:barWidth + "px",
+    backgroundColor:"#000000"
   }
   
-  const blocksArray = initializeBlocksArray();
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      switch (e.key) {
+        case 'ArrowLeft': handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
+        case 'ArrowRight': handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
+        default: break;
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [])
+
+  
+  useEffect(() => {
+    // スライドバーの上面に当たったらy方向の向きを逆にする
+    if (props.y >= (screenHeight - ballSize - barHeight) && props.barX - barWidth/2 <= props.x && props.x <= props.barX + barWidth/2) {
+      props.setMoveYflag(false);
+    }
+  }, [props.x, props.y, props])
+  
+
+  return (
+    <div style={barStyle}></div>
+  )
+}
+
+//ブロック一つのコンポーネント
+function Block(props) {
+  
+  const blockStyle = {
+    display: props.flag ? "inline-block" : "none",
+    position: "absolute",
+    top: props.blockTopY,
+    left: props.blockLeftX,
+    height: blockHeight + "px",
+    width: blockWidth + "px",
+    backgroundColor: "#00ff00",
+    border: "solid 1px #ff0000",
+  }
+
+  useEffect(() => {
+    
+    if (props.flag){
+      // ブロックに当たったら方向を逆にする
+    
+      //上端との衝突
+      if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
+        flagsArray[props.index] = false;
+        props.setFlagsStates(flagsArray);
+        props.setMoveYflag(false);
+      }
+
+      //左端との衝突
+      if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
+        flagsArray[props.index] = false;
+        props.setFlagsStates(flagsArray);
+        props.setMoveXflag(false);
+      }
+
+      //下端との衝突
+      if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
+        flagsArray[props.index] = false;
+        props.setFlagsStates(flagsArray);
+        props.setMoveYflag(true);
+      }
+
+      //右端との衝突
+      if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
+        flagsArray[props.index] = false;
+        props.setFlagsStates(flagsArray);
+        props.setMoveXflag(true);
+      }
+    }
+      
+  }, [props.x, props.y, props])
+  
+
+  return (
+    <div style={blockStyle}></div>
+  )
+}
+
+//ゲームディスプレイのコンポーネント
+const GameDisplay = (props) => {  
+
+  const screenStyle = {
+    //marginLeft: "auto",
+    //marginRight: "auto",
+    width: screenWidth + "px",
+    height: screenHeight + "px",
+    border:"solid 1px #000000"
+  };
+
+  return (
+      <div
+        style={screenStyle}
+        onClick={() => {setVelocity(props.startedFlag, props.setStartedFlag, props.setVelocityX, props.setVelocityY)}}
+      >
+        {blocksArray.map((value, key) => {
+          return (<Block
+                    index={value.index}
+                    blockTopY={value.blockTopY}
+                    blockLeftX={value.blockLeftX}
+                    flag={props.flagsStates[key]}
+                    setFlagsStates={props.setFlagsStates}
+                    x={props.x}
+                    y={props.y}
+                    setMoveXflag={props.setMoveXflag}
+                    setMoveYflag={props.setMoveYflag}
+                  />);
+        })}
+        <Ball
+          x={props.x}
+          setX={props.setX}
+          y={props.y}
+          setY={props.setY}
+          velocityX={props.velocityX}
+          setVelocityX={props.setVelocityX}
+          velocityY={props.velocityY}
+          setVelocityY={props.setVelocityY}
+          moveXflag={props.moveXflag}
+          setMoveXflag={props.setMoveXflag}
+          moveYflag={props.moveYflag}
+          startedFlag={props.startedFlag}
+          setStartedFlag={props.setStartedFlag}
+          setMoveYflag={props.setMoveYflag}
+          setEndFlag={props.setEndFlag}
+        />
+        <Slidebar
+          barX={props.barX}
+          setBarX={props.setBarX}
+          x={props.x}
+          y={props.y}
+          setMoveYflag={props.setMoveYflag}
+        />
+        {props.endFlag ? <p>GameOver</p> : <p></p>}
+      </div>
+  );
+}
+
+//操作盤のコンポーネント
+const ControlPanel = (props) => {
+
+  const panelStyle = {
+    display:"float"
+  }
+
+  return (
+    <div style={panelStyle}>
+      <button onClick={() => {handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>L</button>
+      <button onClick={() => {handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>R</button>
+    </div>
+  );
+}
+
+
+function Game() {
   
   // スライドバー横位置
   const [barX, setBarX] = useState(initialBarPosition.x);
@@ -100,224 +327,7 @@ const Game = () => {
 
   const [flagsStates, setFlagsStates] = useState(flagsArray);
 
-  //ボールのコンポーネント
-  const Ball = (props) => {
-      
-    useEffect(() => {
-      // 端に行ったら方向を逆にする
-      if (props.y <= 0) {
-        props.setMoveYflag(true);
-      }
-      if (props.x >= screenWidth - ballSize) {
-        props.setMoveXflag(false);
-      }
-      if (props.y >= screenHeight - ballSize) {
-        moveEnd();
-      }
-      if (props.x <= 0) {
-        props.setMoveXflag(true);
-      }
-    }, [props.x, props.y, props])
-    
-    useEffect(() => {
-      // 移動速度
-      const step = setTimeout(() => 
-        {
-          if (props.moveXflag) {
-            props.setX(props.x + velocityX);
-          } else {
-            props.setX(props.x - velocityX);
-          }
-          if (props.moveYflag) {
-            props.setY(props.y + velocityY);
-          } else {
-            props.setY(props.y - velocityY);
-          }
-
-        }
-      , 10);
   
-      return () => clearTimeout(step);
-  
-    }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
-  
-    const ballStyle = {
-      position: "absolute",
-      top: y,
-      left: x,
-      width: ballSize + "px",
-      height: ballSize + "px",
-      backgroundColor:"#000000"
-    }
-  
-    return (
-        <div style={ballStyle}></div>
-    );
-  }
-
-  //スライドバー（ボールを打ち返すやつ）のコンポーネント
-  const Slidebar = (props) => {
-    const barStyle = {  
-      position: "absolute",
-      top:initialBarPosition.y,
-      left: props.barX - barWidth/2,
-      height:barHeight + "px",
-      width:barWidth + "px",
-      backgroundColor:"#000000"
-    }
-    
-    useEffect(() => {
-      const handleKeyDown = (e) => {
-        switch (e.key) {
-          case 'ArrowLeft': handleClickL(); break;
-          case 'ArrowRight': handleClickR(); break;
-          default: break;
-        }
-      }
-
-      window.addEventListener('keydown', handleKeyDown);
-
-      return () => {
-        window.removeEventListener('keydown', handleKeyDown);
-      }
-    }, [])
-
-    
-    useEffect(() => {
-      // スライドバーの上面に当たったらy方向の向きを逆にする
-      if (props.y >= (screenHeight - ballSize - barHeight) && barX - barWidth/2 <= props.x && props.x <= barX + barWidth/2) {
-        props.setMoveYflag(false);
-      }
-    }, [props.x, props.y, props])
-    
-
-    return (
-      <div style={barStyle}></div>
-    )
-  }
-
-  //ブロック一つのコンポーネント
-  const Block = (props) => {
-    
-    const blockStyle = {
-      display: props.flag ? "inline-block" : "none",
-      position: "absolute",
-      top: props.blockTopY,
-      left: props.blockLeftX,
-      height: blockHeight + "px",
-      width: blockWidth + "px",
-      backgroundColor: "#00ff00",
-      border: "solid 1px #ff0000",
-    }
-
-    useEffect(() => {
-      
-      if (props.flag){
-        // ブロックに当たったら方向を逆にする
-      
-        //上端との衝突
-        if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
-          flagsArray[props.index] = false;
-          props.setFlagsStates(flagsArray);
-          props.setMoveYflag(false);
-        }
-
-        //左端との衝突
-        if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
-          flagsArray[props.index] = false;
-          props.setFlagsStates(flagsArray);
-          props.setMoveXflag(false);
-        }
-
-        //下端との衝突
-        if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
-          flagsArray[props.index] = false;
-          props.setFlagsStates(flagsArray);
-          props.setMoveYflag(true);
-        }
-
-        //右端との衝突
-        if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
-          flagsArray[props.index] = false;
-          props.setFlagsStates(flagsArray);
-          props.setMoveXflag(true);
-        }
-      }
-        
-    }, [props.x, props.y, props])
-    
-
-    return (
-      <div style={blockStyle}></div>
-    )
-  }
-
-  //ゲームディスプレイのコンポーネント
-  const GameDisplay = (props) => {  
-
-    const screenStyle = {
-      //marginLeft: "auto",
-      //marginRight: "auto",
-      width: screenWidth + "px",
-      height: screenHeight + "px",
-      border:"solid 1px #000000"
-    };
-
-    return (
-        <div style={screenStyle} onClick={setVelocity}>
-          {blocksArray.map((value, key) => {
-            return (<Block
-                      index={value.index}
-                      blockTopY={value.blockTopY}
-                      blockLeftX={value.blockLeftX}
-                      flag={props.flagsStates[key]}
-                      setFlagsStates={props.setFlagsStates}
-                      x={props.x}
-                      y={props.y}
-                      setMoveXflag={props.setMoveXflag}
-                      setMoveYflag={props.setMoveYflag}
-                    />);
-          })}
-          <Ball
-            x={props.x}
-            setX={props.setX}
-            y={props.y}
-            setY={props.setY}
-            velocityX={props.velocityX}
-            setVelocityX={props.setVelocityX}
-            velocityY={props.velocityY}
-            setVelocityY={props.setVelocityY}
-            moveXflag={props.moveXflag}
-            setMoveXflag={props.setMoveXflag}
-            moveYflag={props.moveYflag}
-            setMoveYflag={props.setMoveYflag}
-          />
-          <Slidebar
-            barX={props.barX}
-            setBarX={props.setBarX}
-            x={props.x}
-            y={props.y}
-            setMoveYflag={props.setMoveYflag}
-          />
-          {endFlag ? <p>GameOver</p> : <p></p>}
-        </div>
-    );
-  }
-
-  //操作盤のコンポーネント
-  const ControlPanel = (props) => {
-
-    const panelStyle = {
-      display:"float"
-    }
-  
-    return (
-      <div style={panelStyle}>
-        <button onClick={props.handleClickL}>L</button>
-        <button onClick={props.handleClickR}>R</button>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -334,6 +344,10 @@ const Game = () => {
         setMoveXflag={setMoveXflag}
         moveYflag={moveYflag}
         setMoveYflag={setMoveYflag}
+        startedFlag={startedFlag}
+        setStartedFlag={setStartedFlag}
+        endFlag={endFlag}
+        setEndFlag={setEndFlag}
         barX={barX}
         setBarX={setBarX}
         flagsStates={flagsStates}
@@ -342,8 +356,6 @@ const Game = () => {
       <ControlPanel
         barX={barX}
         setBarX={setBarX}
-        handleClickL={handleClickL}
-        handleClickR={handleClickR}
       />
     </div>
   );
