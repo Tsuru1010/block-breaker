@@ -136,6 +136,7 @@ function Slidebar(props) {
     backgroundColor:"#000000"
   }
   
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.key) {
@@ -150,9 +151,9 @@ function Slidebar(props) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [])
+  }, [props.startedFlag, props.barX])
 
-  
+
   useEffect(() => {
     // スライドバーの上面に当たったらy方向の向きを逆にする
     if (props.y >= (screenHeight - ballSize - barHeight) && props.barX - barWidth/2 <= props.x && props.x <= props.barX + barWidth/2) {
@@ -269,11 +270,13 @@ const GameDisplay = (props) => {
           setEndFlag={props.setEndFlag}
         />
         <Slidebar
-          barX={props.barX}
-          setBarX={props.setBarX}
           x={props.x}
+          setX={props.setX}
           y={props.y}
           setMoveYflag={props.setMoveYflag}
+          startedFlag={props.startedFlag}
+          barX={props.barX}
+          setBarX={props.setBarX}
         />
         {props.endFlag ? <p>GameOver</p> : <p></p>}
       </div>
@@ -327,7 +330,6 @@ function Game() {
 
   const [flagsStates, setFlagsStates] = useState(flagsArray);
 
-  
 
   return (
     <div>
@@ -354,6 +356,9 @@ function Game() {
         setFlagsStates={setFlagsStates}
       />
       <ControlPanel
+        x={x}
+        setX={setX}
+        startedFlag={startedFlag}
         barX={barX}
         setBarX={setBarX}
       />
