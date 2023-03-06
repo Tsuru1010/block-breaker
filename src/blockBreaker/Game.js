@@ -15,7 +15,7 @@ let velocity = {x:0, y:0};
 let flagsArray = [true, true, true, true, true, true, true, true,
                   true, true, true, true, true, true, true, true, 
                   true, true, true, true, true, true, true, true, 
-                  true, true, true, true, true, true, true, true]
+                  true, true, true, true, true, true, true, true];
 
 
 function initializeBlocksArray(){
@@ -191,6 +191,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveYflag(false);
+        props.setScore(props.score + 1);
       }
 
       //左端との衝突
@@ -198,6 +199,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveXflag(false);
+        props.setScore(props.score + 1);
       }
 
       //下端との衝突
@@ -205,6 +207,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveYflag(true);
+        props.setScore(props.score + 1);
       }
 
       //右端との衝突
@@ -212,11 +215,17 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveXflag(true);
+        props.setScore(props.score + 1);
       }
     }
       
   }, [props.x, props.y, props])
-  
+
+  /*
+  useEffect(() => {
+    props.setScore(props.score + 1);
+  }, [props.blockFlags])
+  */
 
   return (
     <div style={blockStyle}></div>
@@ -247,6 +256,7 @@ const GameDisplay = (props) => {
   };
 
   return (
+    <div>
       <div
         style={screenStyle}
         onClick={() => {setVelocity(props.startedFlag, props.setStartedFlag, setVelocityX, setVelocityY)}}
@@ -260,6 +270,8 @@ const GameDisplay = (props) => {
                     setBlockFlags={props.setBlockFlags}
                     x={props.x}
                     y={props.y}
+                    score={props.score}
+                    setScore={props.setScore}
                     setMoveXflag={setMoveXflag}
                     setMoveYflag={setMoveYflag}
                   />);
@@ -290,8 +302,9 @@ const GameDisplay = (props) => {
           setBarX={props.setBarX}
           setMoveYflag={setMoveYflag}
         />
-        {props.endFlag ? <p>GameOver</p> : <p></p>}
       </div>
+      {props.endFlag ? <p>GameOver Score:{props.score}</p> : <p>Score:{props.score}</p>}
+    </div>
   );
 }
 
@@ -331,6 +344,8 @@ function Game() {
   //ブロック存在フラグ（ture:存在，false:ボールと衝突して消失）
   const [blockFlags, setBlockFlags] = useState(flagsArray);
 
+  //得点
+  const [score, setScore] = useState(0);
 
   return (
     <div>
@@ -347,6 +362,8 @@ function Game() {
         setBarX={setBarX}
         blockFlags={blockFlags}
         setBlockFlags={setBlockFlags}
+        score={score}
+        setScore={setScore}
       />
       <ControlPanel
         x={x}
