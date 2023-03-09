@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 
 const screenWidth = 320;
 const screenHeight = 500;
@@ -7,15 +7,15 @@ const barWidth = 80;
 const barHeight = 20;
 const blockWidth = screenWidth/8;
 const blockHeight = 20;
-const initialBallPosition = {x:160, y:470};
+const initialBallPosition = {x:160, y:475};
 const initialBarPosition = {x:160, y:480};
 const blocksArray = initializeBlocksArray();
 
 let velocity = {x:0, y:0};
-let flagsArray = [true, true, true, true, true, true, true, true,
-                  true, true, true, true, true, true, true, true, 
-                  true, true, true, true, true, true, true, true, 
-                  true, true, true, true, true, true, true, true];
+let blockFlagsArray = [true, true, true, true, true, true, true, true,
+                       true, true, true, true, true, true, true, true, 
+                       true, true, true, true, true, true, true, true, 
+                       true, true, true, true, true, true, true, true];
 let varScore = 0;
 
 
@@ -38,19 +38,19 @@ function initializeBlocksArray(){
 }
 
 function handleClickL(barX, setBarX, startedFlag, setX, x) {
-  if (barX - 1 - barWidth/2 > 0){
-    setBarX(barX - 1);
+  if (barX - 5 - barWidth/2 > 0){
+    setBarX(barX - 5);
     if (startedFlag === false){
-      setX(x - 1);
+      setX(x - 5);
     }
   }
 }
 
 function handleClickR(barX, setBarX, startedFlag, setX, x) {
-  if (barX + 1 + barWidth/2 < screenWidth){
-    setBarX(barX + 1);
+  if (barX + 5 + barWidth/2 < screenWidth){
+    setBarX(barX + 5);
     if (startedFlag === false){
-      setX(x + 1);
+      setX(x + 5);
     }
   }
 }
@@ -76,16 +76,16 @@ function Ball(props) {
       
   useEffect(() => {
     // 端に行ったら方向を逆にする
-    if (props.y <= 0) {
+    if (props.y - ballSize/2 <= 0) {
       props.setMoveYflag(true);
     }
-    if (props.x >= screenWidth - ballSize) {
+    if (props.x + ballSize/2 >= screenWidth) {
       props.setMoveXflag(false);
     }
-    if (props.y >= screenHeight - ballSize) {
+    if (props.y + ballSize/2 >= screenHeight) {
       moveEnd(props.setEndFlag, props.setVelocityX, props.setVelocityY);
     }
-    if (props.x <= 0) {
+    if (props.x - ballSize/2 <= 0) {
       props.setMoveXflag(true);
     }
   }, [props.x, props.y, props])
@@ -114,8 +114,8 @@ function Ball(props) {
 
   const ballStyle = {
     position: "absolute",
-    top: props.y,
-    left: props.x,
+    top: props.y - ballSize/2,
+    left: props.x - ballSize/2,
     width: ballSize + "px",
     height: ballSize + "px",
     backgroundColor:"#000000"
@@ -157,7 +157,7 @@ function Slidebar(props) {
 
   useEffect(() => {
     // スライドバーの上面に当たったらy方向の向きを逆にする
-    if (props.y >= (screenHeight - ballSize - barHeight) && props.barX - barWidth/2 <= props.x && props.x <= props.barX + barWidth/2) {
+    if (props.y + ballSize/2 >= (screenHeight - barHeight) && props.barX - barWidth/2 <= props.x - ballSize/2 && props.x + ballSize/2 <= props.barX + barWidth/2) {
       props.setMoveYflag(false);
     }
   }, [props.x, props.y, props])
@@ -188,33 +188,33 @@ function Block(props) {
       // ブロックに当たったら方向を逆にする
     
       //上端との衝突
-      if (props.y + ballSize === props.blockTopY && props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
-        flagsArray[props.index] = false;
-        props.setBlockFlags(flagsArray);
+      if (props.y + ballSize/2 === props.blockTopY && props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
+        blockFlagsArray[props.index] = false;
+        props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(false);
         varScore++;
       }
 
       //左端との衝突
-      if (props.x + ballSize === props.blockLeftX && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
-        flagsArray[props.index] = false;
-        props.setBlockFlags(flagsArray);
+      if (props.x + ballSize/2 === props.blockLeftX && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
+        blockFlagsArray[props.index] = false;
+        props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(false);
         varScore++;
       }
 
       //下端との衝突
-      if (props.y === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x && props.x + ballSize <= props.blockLeftX + blockWidth) {
-        flagsArray[props.index] = false;
-        props.setBlockFlags(flagsArray);
+      if (props.y - ballSize/2 === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
+        blockFlagsArray[props.index] = false;
+        props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(true);
         varScore++;
       }
 
       //右端との衝突
-      if (props.x === props.blockLeftX + blockWidth && props.blockTopY <= props.y && props.y + ballSize <= props.blockTopY + blockWidth) {
-        flagsArray[props.index] = false;
-        props.setBlockFlags(flagsArray);
+      if (props.x - ballSize/2 === props.blockLeftX + blockWidth && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
+        blockFlagsArray[props.index] = false;
+        props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(true);
         varScore++;
       }
@@ -341,7 +341,7 @@ function Game() {
   const [endFlag, setEndFlag] = useState(false);
 
   //ブロック存在フラグ（ture:存在，false:ボールと衝突して消失）
-  const [blockFlags, setBlockFlags] = useState(flagsArray);
+  const [blockFlags, setBlockFlags] = useState(blockFlagsArray);
 
   //得点
   const [score, setScore] = useState(0);
