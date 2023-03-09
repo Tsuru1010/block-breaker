@@ -16,6 +16,7 @@ let flagsArray = [true, true, true, true, true, true, true, true,
                   true, true, true, true, true, true, true, true, 
                   true, true, true, true, true, true, true, true, 
                   true, true, true, true, true, true, true, true];
+let varScore = 0;
 
 
 function initializeBlocksArray(){
@@ -191,7 +192,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveYflag(false);
-        props.setScore(props.score + 1);
+        varScore++;
       }
 
       //左端との衝突
@@ -199,7 +200,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveXflag(false);
-        props.setScore(props.score + 1);
+        varScore++;
       }
 
       //下端との衝突
@@ -207,7 +208,7 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveYflag(true);
-        props.setScore(props.score + 1);
+        varScore++;
       }
 
       //右端との衝突
@@ -215,17 +216,15 @@ function Block(props) {
         flagsArray[props.index] = false;
         props.setBlockFlags(flagsArray);
         props.setMoveXflag(true);
-        props.setScore(props.score + 1);
+        varScore++;
       }
     }
       
   }, [props.x, props.y, props])
 
-  /*
   useEffect(() => {
-    props.setScore(props.score + 1);
-  }, [props.blockFlags])
-  */
+    props.setScore(varScore);
+  }, [props.flag])
 
   return (
     <div style={blockStyle}></div>
