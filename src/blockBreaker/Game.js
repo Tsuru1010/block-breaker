@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 
 const screenWidth = 320;
 const screenHeight = 500;
@@ -52,16 +52,6 @@ function handleClickR(barX, setBarX, startedFlag, setX, x) {
     if (startedFlag === false){
       setX(x + 5);
     }
-  }
-}
-
-function setVelocity(startedFlag, setStartedFlag, setVelocityX, setVelocityY) {
-  if (startedFlag === true){
-    return;
-  } else {
-    setStartedFlag(true);
-    setVelocityX(1);
-    setVelocityY(1);
   }
 }
 
@@ -188,7 +178,7 @@ function Block(props) {
       // ブロックに当たったら方向を逆にする
     
       //上端との衝突
-      if (props.y + ballSize/2 === props.blockTopY && props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
+      if (Math.floor(props.y) + ballSize/2 === props.blockTopY && props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(false);
@@ -196,7 +186,7 @@ function Block(props) {
       }
 
       //左端との衝突
-      if (props.x + ballSize/2 === props.blockLeftX && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
+      if (Math.floor(props.x) + ballSize/2 === props.blockLeftX && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(false);
@@ -204,7 +194,7 @@ function Block(props) {
       }
 
       //下端との衝突
-      if (props.y - ballSize/2 === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
+      if (Math.floor(props.y) - ballSize/2 === props.blockTopY + blockHeight &&  props.blockLeftX <= props.x - ballSize/2 && props.x + ballSize/2 <= props.blockLeftX + blockWidth) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(true);
@@ -212,7 +202,7 @@ function Block(props) {
       }
 
       //右端との衝突
-      if (props.x - ballSize/2 === props.blockLeftX + blockWidth && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
+      if (Math.floor(props.x) - ballSize/2 === props.blockLeftX + blockWidth && props.blockTopY <= props.y - ballSize/2 && props.y + ballSize/2 <= props.blockTopY + blockWidth) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(true);
@@ -246,6 +236,8 @@ const GameDisplay = (props) => {
   // 縦移動フラグ（true:下に移動，false:上に移動）
   const [moveYflag, setMoveYflag] = useState(false);
 
+  const displayRef = useRef(null);
+
   const screenStyle = {
     //marginLeft: "auto",
     //marginRight: "auto",
@@ -254,11 +246,51 @@ const GameDisplay = (props) => {
     border:"solid 1px #000000"
   };
 
+  useEffect(() => {
+    const setVelocity = (e) => {
+
+      if (props.startedFlag === true){
+        return;
+      } else {
+        const relativeClickPosition = {
+          x: e.offsetX - initialBallPosition.x,
+          y: e.offsetY - initialBallPosition.y
+        }
+
+        const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
+
+        velocity.x = relativeClickPosition.x / hypotenuse;
+        velocity.y = relativeClickPosition.y / hypotenuse;
+
+        if (velocity.x < 0) {
+          setMoveXflag(false);
+          velocity.x = -velocity.x;
+        }
+
+        if (velocity.y < 0) {
+          setMoveYflag(false);
+          velocity.y = -velocity.y;
+        }
+
+        props.setStartedFlag(true);
+        setVelocityX(velocity.x);
+        setVelocityY(velocity.y);
+      }
+    }
+
+    displayRef.current.addEventListener('click', setVelocity);
+
+    return () => {
+      displayRef.current.removeEventListener('click', setVelocity);  
+    }
+  }, []);
+
   return (
     <div>
       <div
         style={screenStyle}
-        onClick={() => {setVelocity(props.startedFlag, props.setStartedFlag, setVelocityX, setVelocityY)}}
+        //onClick={(event) => {setVelocity(event, props.startedFlag, props.setStartedFlag, setVelocityX, setVelocityY)}}
+        ref={displayRef}
       >
         {blocksArray.map((value, key) => {
           return (<Block
