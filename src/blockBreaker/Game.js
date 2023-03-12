@@ -17,7 +17,8 @@ let blockFlagsArray = [true, true, true, true, true, true, true, true,
                        true, true, true, true, true, true, true, true, 
                        true, true, true, true, true, true, true, true];
 let varScore = 0;
-
+let varStartedFlag = false;
+let debugCounter = 0;
 
 function initializeBlocksArray(){
   let blocksArray = [];
@@ -247,41 +248,45 @@ const GameDisplay = (props) => {
   };
 
   useEffect(() => {
-    const setVelocity = (e) => {
+    let displayElm = displayRef.current;
+    if (displayElm) {
+      const setVelocity = (e) => {
 
-      if (props.startedFlag === true){
-        return;
-      } else {
-        const relativeClickPosition = {
-          x: e.offsetX - initialBallPosition.x,
-          y: e.offsetY - initialBallPosition.y
+        if (varStartedFlag === true){
+          return;
+        } else {
+          const relativeClickPosition = {
+            x: e.offsetX - initialBallPosition.x,
+            y: e.offsetY - initialBallPosition.y
+          }
+  
+          const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
+  
+          velocity.x = relativeClickPosition.x / hypotenuse;
+          velocity.y = relativeClickPosition.y / hypotenuse;
+  
+          if (velocity.x < 0) {
+            setMoveXflag(false);
+            velocity.x = -velocity.x;
+          }
+  
+          if (velocity.y < 0) {
+            setMoveYflag(false);
+            velocity.y = -velocity.y;
+          }
+  
+          varStartedFlag = true;
+          props.setStartedFlag(varStartedFlag);
+          setVelocityX(velocity.x);
+          setVelocityY(velocity.y);
         }
-
-        const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
-
-        velocity.x = relativeClickPosition.x / hypotenuse;
-        velocity.y = relativeClickPosition.y / hypotenuse;
-
-        if (velocity.x < 0) {
-          setMoveXflag(false);
-          velocity.x = -velocity.x;
-        }
-
-        if (velocity.y < 0) {
-          setMoveYflag(false);
-          velocity.y = -velocity.y;
-        }
-
-        props.setStartedFlag(true);
-        setVelocityX(velocity.x);
-        setVelocityY(velocity.y);
       }
-    }
-
-    displayRef.current.addEventListener('click', setVelocity);
-
-    return () => {
-      displayRef.current.removeEventListener('click', setVelocity);  
+  
+      displayElm.addEventListener('click', setVelocity);
+      
+      return () => {
+        displayElm.removeEventListener('click', setVelocity);  
+      }
     }
   }, []);
 
@@ -289,7 +294,6 @@ const GameDisplay = (props) => {
     <div>
       <div
         style={screenStyle}
-        //onClick={(event) => {setVelocity(event, props.startedFlag, props.setStartedFlag, setVelocityX, setVelocityY)}}
         ref={displayRef}
       >
         {blocksArray.map((value, key) => {
@@ -356,6 +360,7 @@ const ControlPanel = (props) => {
 
 
 function Game() {
+  //console.log("A Component, Game, is called." + varStartedFlag);
   
   // スライドバー横位置
   const [barX, setBarX] = useState(initialBarPosition.x);
@@ -367,7 +372,7 @@ function Game() {
   const [y, setY] = useState(initialBallPosition.y);
   
   //ゲーム開始フラグ
-  const [startedFlag, setStartedFlag] = useState(false);
+  const [startedFlag, setStartedFlag] = useState(varStartedFlag);
   
   //ゲーム終了フラグ
   const [endFlag, setEndFlag] = useState(false);
