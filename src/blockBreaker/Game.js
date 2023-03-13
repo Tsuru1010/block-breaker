@@ -56,8 +56,7 @@ function handleClickR(barX, setBarX, startedFlag, setX, x) {
   }
 }
 
-function moveEnd(setEndFlag, setVelocityX, setVelocityY) {
-  setEndFlag(true);
+function moveEnd(setVelocityX, setVelocityY) {
   setVelocityX(0);
   setVelocityY(0);
 }
@@ -74,7 +73,8 @@ function Ball(props) {
       props.setMoveXflag(false);
     }
     if (props.y + ballSize/2 >= screenHeight) {
-      moveEnd(props.setEndFlag, props.setVelocityX, props.setVelocityY);
+      props.setGameoverFlag(true);
+      moveEnd(props.setVelocityX, props.setVelocityY);
     }
     if (props.x - ballSize/2 <= 0) {
       props.setMoveXflag(true);
@@ -102,6 +102,14 @@ function Ball(props) {
     return () => clearTimeout(step);
 
   }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
+
+  useEffect(() => {
+    if (props.score === 32) {
+      props.setGameclearFlag(true);
+      moveEnd(props.setVelocityX, props.setVelocityY);
+      
+    }
+  }, [props.score])
 
   const ballStyle = {
     position: "absolute",
@@ -213,6 +221,7 @@ function Block(props) {
       
   }, [props.x, props.y, props])
 
+  //ブロックの衝突を検知してスコアをセット
   useEffect(() => {
     props.setScore(varScore);
   }, [props.flag])
@@ -223,7 +232,7 @@ function Block(props) {
 }
 
 //ゲームディスプレイのコンポーネント
-const GameDisplay = (props) => {  
+const GameBoard = (props) => {  
 
   //ボール速度絶対値（x軸方向）
   const [velocityX, setVelocityX] = useState(0);
@@ -237,7 +246,7 @@ const GameDisplay = (props) => {
   // 縦移動フラグ（true:下に移動，false:上に移動）
   const [moveYflag, setMoveYflag] = useState(false);
 
-  const displayRef = useRef(null);
+  const boardRef = useRef(null);
 
   const screenStyle = {
     //marginLeft: "auto",
@@ -248,8 +257,8 @@ const GameDisplay = (props) => {
   };
 
   useEffect(() => {
-    let displayElm = displayRef.current;
-    if (displayElm) {
+    let boardElm = boardRef.current;
+    if (boardElm) {
       const setVelocity = (e) => {
 
         if (varStartedFlag === true){
@@ -282,10 +291,10 @@ const GameDisplay = (props) => {
         }
       }
   
-      displayElm.addEventListener('click', setVelocity);
+      boardElm.addEventListener('click', setVelocity);
       
       return () => {
-        displayElm.removeEventListener('click', setVelocity);  
+        boardElm.removeEventListener('click', setVelocity);  
       }
     }
   }, []);
@@ -294,7 +303,7 @@ const GameDisplay = (props) => {
     <div>
       <div
         style={screenStyle}
-        ref={displayRef}
+        ref={boardRef}
       >
         {blocksArray.map((value, key) => {
           return (<Block
@@ -318,11 +327,13 @@ const GameDisplay = (props) => {
           setY={props.setY}
           startedFlag={props.startedFlag}
           setStartedFlag={props.setStartedFlag}
-          setEndFlag={props.setEndFlag}
+          setGameoverFlag={props.setGameoverFlag}
+          setGameclearFlag={props.setGameclearFlag}
           velocityX={velocityX}
           setVelocityX={setVelocityX}
           velocityY={velocityY}
           setVelocityY={setVelocityY}
+          score={props.score}
           moveXflag={moveXflag}
           setMoveXflag={setMoveXflag}
           moveYflag={moveYflag}
@@ -338,7 +349,6 @@ const GameDisplay = (props) => {
           setMoveYflag={setMoveYflag}
         />
       </div>
-      {props.endFlag ? <p>GameOver Score:{props.score}</p> : <p>Score:{props.score}</p>}
     </div>
   );
 }
@@ -360,7 +370,6 @@ const ControlPanel = (props) => {
 
 
 function Game() {
-  //console.log("A Component, Game, is called." + varStartedFlag);
   
   // スライドバー横位置
   const [barX, setBarX] = useState(initialBarPosition.x);
@@ -374,8 +383,11 @@ function Game() {
   //ゲーム開始フラグ
   const [startedFlag, setStartedFlag] = useState(varStartedFlag);
   
-  //ゲーム終了フラグ
-  const [endFlag, setEndFlag] = useState(false);
+  //ゲームオーバーフラグ
+  const [gameoverFlag, setGameoverFlag] = useState(false);
+
+  //ゲームクリアフラグ
+  const [gameclearFlag, setGameclearFlag] = useState(false);
 
   //ブロック存在フラグ（ture:存在，false:ボールと衝突して消失）
   const [blockFlags, setBlockFlags] = useState(blockFlagsArray);
@@ -385,15 +397,16 @@ function Game() {
 
   return (
     <div>
-      <GameDisplay
+      <GameBoard
         x={x}
         setX={setX}
         y={y}
         setY={setY}
         startedFlag={startedFlag}
         setStartedFlag={setStartedFlag}
-        endFlag={endFlag}
-        setEndFlag={setEndFlag}
+        gameoverFlag={gameoverFlag}
+        setGameoverFlag={setGameoverFlag}
+        setGameclearFlag={setGameclearFlag}
         barX={barX}
         setBarX={setBarX}
         blockFlags={blockFlags}
@@ -401,6 +414,8 @@ function Game() {
         score={score}
         setScore={setScore}
       />
+      {gameoverFlag ? <p>GameOver Score:{score}</p> : <p>Score:{score}</p>}
+      {gameclearFlag ? <p>Clear!</p> : <p></p>}
       <ControlPanel
         x={x}
         setX={setX}
