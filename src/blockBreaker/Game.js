@@ -1,15 +1,24 @@
 import React, { useState, useEffect, useRef} from 'react';
+import MediaQuery from 'react-responsive';
 
-const screenWidth = 320;
-const screenHeight = 500;
+const SPsize = 480;
+const boardWidth = calcBoardWidth();
+const boardHeight = 500;
 const ballSize = 10;
 const barWidth = 80;
 const barHeight = 20;
-const blockWidth = screenWidth/8;
+const blockWidth = boardWidth/8;
 const blockHeight = 20;
-const initialBallPosition = {x:160, y:475};
-const initialBarPosition = {x:160, y:480};
+const initialBallPosition = {x:boardWidth/2, y:475};
+const initialBarPosition = {x:boardWidth/2, y:480};
 const blocksArray = initializeBlocksArray();
+const areaName = {
+  gameBorad:"gameBoardArea",
+  gameStatus:"gameStatusArea",
+  score:"ScoreArea",
+  controlPanel:"controlPanelArea",
+  description:"instructionArea"
+}
 
 let velocity = {x:0, y:0};
 let blockFlagsArray = [true, true, true, true, true, true, true, true,
@@ -19,6 +28,14 @@ let blockFlagsArray = [true, true, true, true, true, true, true, true,
 let varScore = 0;
 let varStartedFlag = false;
 let debugCounter = 0;
+
+function calcBoardWidth() {
+  if (document.body.clientWidth > SPsize) {
+    return 320;
+  } else {
+    return document.body.clientWidth;
+  }
+}
 
 function initializeBlocksArray(){
   let blocksArray = [];
@@ -48,7 +65,7 @@ function handleClickL(barX, setBarX, startedFlag, setX, x) {
 }
 
 function handleClickR(barX, setBarX, startedFlag, setX, x) {
-  if (barX + 5 + barWidth/2 < screenWidth){
+  if (barX + 5 + barWidth/2 < boardWidth){
     setBarX(barX + 5);
     if (startedFlag === false){
       setX(x + 5);
@@ -69,10 +86,10 @@ function Ball(props) {
     if (props.y - ballSize/2 <= 0) {
       props.setMoveYflag(true);
     }
-    if (props.x + ballSize/2 >= screenWidth) {
+    if (props.x + ballSize/2 >= boardWidth) {
       props.setMoveXflag(false);
     }
-    if (props.y + ballSize/2 >= screenHeight) {
+    if (props.y + ballSize/2 >= boardHeight) {
       props.setGameoverFlag(true);
       moveEnd(props.setVelocityX, props.setVelocityY);
     }
@@ -156,7 +173,7 @@ function Slidebar(props) {
 
   useEffect(() => {
     // スライドバーの上面に当たったらy方向の向きを逆にする
-    if (props.y + ballSize/2 >= (screenHeight - barHeight) && props.barX - barWidth/2 <= props.x - ballSize/2 && props.x + ballSize/2 <= props.barX + barWidth/2) {
+    if (props.y + ballSize/2 >= (boardHeight - barHeight) && props.barX - barWidth/2 <= props.x - ballSize/2 && props.x + ballSize/2 <= props.barX + barWidth/2) {
       props.setMoveYflag(false);
     }
   }, [props.x, props.y, props])
@@ -248,11 +265,11 @@ const GameBoard = (props) => {
 
   const boardRef = useRef(null);
 
-  const screenStyle = {
-    //marginLeft: "auto",
-    //marginRight: "auto",
-    width: screenWidth + "px",
-    height: screenHeight + "px",
+  const boardStyle = {
+    gridArea: areaName.gameBorad,
+    position: "relative",
+    width: boardWidth + "px",
+    height: boardHeight + "px",
     border:"solid 1px #000000"
   };
 
@@ -300,55 +317,53 @@ const GameBoard = (props) => {
   }, []);
 
   return (
-    <div>
-      <div
-        style={screenStyle}
-        ref={boardRef}
-      >
-        {blocksArray.map((value, key) => {
-          return (<Block
-                    index={value.index}
-                    blockTopY={value.blockTopY}
-                    blockLeftX={value.blockLeftX}
-                    flag={props.blockFlags[key]}
-                    setBlockFlags={props.setBlockFlags}
-                    x={props.x}
-                    y={props.y}
-                    score={props.score}
-                    setScore={props.setScore}
-                    setMoveXflag={setMoveXflag}
-                    setMoveYflag={setMoveYflag}
-                  />);
-        })}
-        <Ball
-          x={props.x}
-          setX={props.setX}
-          y={props.y}
-          setY={props.setY}
-          startedFlag={props.startedFlag}
-          setStartedFlag={props.setStartedFlag}
-          setGameoverFlag={props.setGameoverFlag}
-          setGameclearFlag={props.setGameclearFlag}
-          velocityX={velocityX}
-          setVelocityX={setVelocityX}
-          velocityY={velocityY}
-          setVelocityY={setVelocityY}
-          score={props.score}
-          moveXflag={moveXflag}
-          setMoveXflag={setMoveXflag}
-          moveYflag={moveYflag}
-          setMoveYflag={setMoveYflag}
-        />
-        <Slidebar
-          x={props.x}
-          setX={props.setX}
-          y={props.y}
-          startedFlag={props.startedFlag}
-          barX={props.barX}
-          setBarX={props.setBarX}
-          setMoveYflag={setMoveYflag}
-        />
-      </div>
+    <div
+      style={boardStyle}
+      ref={boardRef}
+    >
+      {blocksArray.map((value, key) => {
+        return (<Block
+                  index={value.index}
+                  blockTopY={value.blockTopY}
+                  blockLeftX={value.blockLeftX}
+                  flag={props.blockFlags[key]}
+                  setBlockFlags={props.setBlockFlags}
+                  x={props.x}
+                  y={props.y}
+                  score={props.score}
+                  setScore={props.setScore}
+                  setMoveXflag={setMoveXflag}
+                  setMoveYflag={setMoveYflag}
+                />);
+      })}
+      <Ball
+        x={props.x}
+        setX={props.setX}
+        y={props.y}
+        setY={props.setY}
+        startedFlag={props.startedFlag}
+        setStartedFlag={props.setStartedFlag}
+        setGameoverFlag={props.setGameoverFlag}
+        setGameclearFlag={props.setGameclearFlag}
+        velocityX={velocityX}
+        setVelocityX={setVelocityX}
+        velocityY={velocityY}
+        setVelocityY={setVelocityY}
+        score={props.score}
+        moveXflag={moveXflag}
+        setMoveXflag={setMoveXflag}
+        moveYflag={moveYflag}
+        setMoveYflag={setMoveYflag}
+      />
+      <Slidebar
+        x={props.x}
+        setX={props.setX}
+        y={props.y}
+        startedFlag={props.startedFlag}
+        barX={props.barX}
+        setBarX={props.setBarX}
+        setMoveYflag={setMoveYflag}
+      />
     </div>
   );
 }
@@ -357,7 +372,8 @@ const GameBoard = (props) => {
 const ControlPanel = (props) => {
 
   const panelStyle = {
-    display:"float"
+    display:"float",
+    gridArea: areaName.controlPanel
   }
 
   return (
@@ -368,6 +384,28 @@ const ControlPanel = (props) => {
   );
 }
 
+function GameStatus(props) {
+  const statusStyle = {
+    gridArea: areaName.gameStatus
+  }
+  
+  return (
+    <div style={statusStyle}>
+      {props.gameoverFlag ? <p>game over</p> : <p></p>}
+      {props.gameclearFlag ? <p>game clear!</p> : <p></p>}
+    </div>
+  )
+}
+
+function ScoreBoard(props) {
+  const scoreStyle = {
+    gridArea: areaName.score
+  }
+  
+  return (
+    <p style={scoreStyle}>Score:{props.score}</p>
+  )
+}
 
 function Game() {
   
@@ -395,34 +433,93 @@ function Game() {
   //得点
   const [score, setScore] = useState(0);
 
+  const PCStyle = {
+    display: "grid",
+    gridTemplateColumns: "50% 320px 50%",
+    girdTemplateRows: "50% 50% 20px",
+    gridTemplateAreas: `"${areaName.score} ${areaName.gameBorad} ${areaName.instruction}"\n`
+                      +`"${areaName.gameStatus} ${areaName.gameBorad} ${areaName.instruction}"\n`
+                      +`"${areaName.gameStatus} ${areaName.controlPanel} ${areaName.instruction}"\n`
+  }
+
+  const SPStyle = {
+    display: "grid",
+    girdTemplateRows: "500px 15% 15% 15% 55%",
+    gridTemplateAreas: `"${areaName.gameBorad}"\n`
+                      +`"${areaName.controlPanel}"\n`
+                      +`"${areaName.gameStatus}"\n`
+                      +`"${areaName.score}"\n`
+                      +`"${areaName.description}"`
+  }
+
   return (
-    <div>
-      <GameBoard
-        x={x}
-        setX={setX}
-        y={y}
-        setY={setY}
-        startedFlag={startedFlag}
-        setStartedFlag={setStartedFlag}
-        gameoverFlag={gameoverFlag}
-        setGameoverFlag={setGameoverFlag}
-        setGameclearFlag={setGameclearFlag}
-        barX={barX}
-        setBarX={setBarX}
-        blockFlags={blockFlags}
-        setBlockFlags={setBlockFlags}
-        score={score}
-        setScore={setScore}
-      />
-      {gameoverFlag ? <p>GameOver Score:{score}</p> : <p>Score:{score}</p>}
-      {gameclearFlag ? <p>Clear!</p> : <p></p>}
-      <ControlPanel
-        x={x}
-        setX={setX}
-        startedFlag={startedFlag}
-        barX={barX}
-        setBarX={setBarX}
-      />
+    <div >
+      <MediaQuery query={`(min-width: ${SPsize}px)`}>
+        <div style={PCStyle}>
+          <GameBoard
+            x={x}
+            setX={setX}
+            y={y}
+            setY={setY}
+            startedFlag={startedFlag}
+            setStartedFlag={setStartedFlag}
+            gameoverFlag={gameoverFlag}
+            setGameoverFlag={setGameoverFlag}
+            setGameclearFlag={setGameclearFlag}
+            barX={barX}
+            setBarX={setBarX}
+            blockFlags={blockFlags}
+            setBlockFlags={setBlockFlags}
+            score={score}
+            setScore={setScore}
+          />
+          <GameStatus
+            gameoverFlag={gameoverFlag}
+            gameclearFlag={gameclearFlag}
+          />
+          <ScoreBoard score={score}/>
+          <ControlPanel
+            x={x}
+            setX={setX}
+            startedFlag={startedFlag}
+            barX={barX}
+            setBarX={setBarX}
+          />
+        </div>
+      </MediaQuery>
+      <MediaQuery query={`(max-width: ${SPsize}px)`}>
+        <div style={SPStyle}>
+          <GameStatus
+            gameoverFlag={gameoverFlag}
+            gameclearFlag={gameclearFlag}
+          />
+          <ScoreBoard score={score}/>
+          <GameBoard
+            x={x}
+            setX={setX}
+            y={y}
+            setY={setY}
+            startedFlag={startedFlag}
+            setStartedFlag={setStartedFlag}
+            gameoverFlag={gameoverFlag}
+            setGameoverFlag={setGameoverFlag}
+            setGameclearFlag={setGameclearFlag}
+            barX={barX}
+            setBarX={setBarX}
+            blockFlags={blockFlags}
+            setBlockFlags={setBlockFlags}
+            score={score}
+            setScore={setScore}
+          />
+          <ControlPanel
+            x={x}
+            setX={setX}
+            startedFlag={startedFlag}
+            barX={barX}
+            setBarX={setBarX}
+          />
+        </div>
+      </MediaQuery>
     </div>
   );
 }
