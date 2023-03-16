@@ -30,10 +30,17 @@ let varStartedFlag = false;
 let debugCounter = 0;
 
 function calcBoardWidth() {
-  if (document.body.clientWidth > SPsize) {
-    return 320;
+  const browserWidth = document.body.clientWidth;
+
+  if (browserWidth) {
+    if (browserWidth > SPsize) {
+      return browserWidth/3;
+    } else {
+      return browserWidth;
+    }
   } else {
-    return document.body.clientWidth;
+    console.log("error at calcBoardWidth");
+    return 320;
   }
 }
 
@@ -282,8 +289,8 @@ const GameBoard = (props) => {
           return;
         } else {
           const relativeClickPosition = {
-            x: e.offsetX - initialBallPosition.x,
-            y: e.offsetY - initialBallPosition.y
+            x: e.offsetX - props.x,
+            y: e.offsetY - props.y
           }
   
           const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
@@ -314,7 +321,7 @@ const GameBoard = (props) => {
         boardElm.removeEventListener('click', setVelocity);  
       }
     }
-  }, []);
+  }, [props.x]);
 
   return (
     <div
@@ -373,6 +380,7 @@ const ControlPanel = (props) => {
 
   const panelStyle = {
     display:"float",
+    //paddingTop: "0",
     gridArea: areaName.controlPanel
   }
 
@@ -386,7 +394,8 @@ const ControlPanel = (props) => {
 
 function GameStatus(props) {
   const statusStyle = {
-    gridArea: areaName.gameStatus
+    gridArea: areaName.gameStatus,
+    backgroundColor:"#ff00ff"
   }
   
   return (
@@ -399,7 +408,8 @@ function GameStatus(props) {
 
 function ScoreBoard(props) {
   const scoreStyle = {
-    gridArea: areaName.score
+    gridArea: areaName.score,
+    backgroundColor:"#ff00ff"
   }
   
   return (
@@ -435,8 +445,8 @@ function Game() {
 
   const PCStyle = {
     display: "grid",
-    gridTemplateColumns: "50% 320px 50%",
-    girdTemplateRows: "50% 50% 20px",
+    gridTemplateColumns: "33% 33% 33%",
+    girdTemplateRows: "48% 48% 4%",
     gridTemplateAreas: `"${areaName.score} ${areaName.gameBorad} ${areaName.instruction}"\n`
                       +`"${areaName.gameStatus} ${areaName.gameBorad} ${areaName.instruction}"\n`
                       +`"${areaName.gameStatus} ${areaName.controlPanel} ${areaName.instruction}"\n`
