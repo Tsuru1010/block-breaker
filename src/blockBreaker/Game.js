@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef} from 'react';
 import MediaQuery from 'react-responsive';
 
+const borderSize = 1;
 const SPsize = 480;
 const boardWidth = calcBoardWidth();
 const boardHeight = 500;
@@ -17,7 +18,7 @@ const areaName = {
   gameStatus:"gameStatusArea",
   score:"ScoreArea",
   controlPanel:"controlPanelArea",
-  description:"instructionArea"
+  instruction:"instructionArea"
 }
 
 let velocity = {x:0, y:0};
@@ -34,9 +35,9 @@ function calcBoardWidth() {
 
   if (browserWidth) {
     if (browserWidth > SPsize) {
-      return browserWidth/3;
+      return browserWidth/3 - borderSize*2;
     } else {
-      return browserWidth;
+      return browserWidth - borderSize*2;
     }
   } else {
     console.log("error at calcBoardWidth");
@@ -417,6 +418,34 @@ function ScoreBoard(props) {
   )
 }
 
+function Instruction() {
+  const instructionStyle = {
+    gridArea: areaName.instruction,
+    margin: "10px"
+  }
+
+  return (
+    <div style={instructionStyle}>
+      <h2>遊び方</h2>
+      <ol>
+        <li>
+          <p>ブロック崩しの盤面をクリックしてゲーム開始．</p>
+          <p>クリックした方向にボールが発射．</p>
+        </li>
+        <li>
+          <p>Lボタン，Rボタンでスライドバーを移動可．</p>
+          <p>PCだと，矢印キーでも移動できる．</p>
+          <p>スライドバーを移動させてボールを打ち返せる．</p>
+        </li>
+        <li>
+          <p>ボールを落とさず打ち返し続け，全てのブロックを破壊できればゲームクリア．</p>
+          <p>ボールを落としてしまうとゲームオーバー．</p>
+        </li>
+      </ol>
+    </div>
+  );
+}
+
 function Game() {
   
   // スライドバー横位置
@@ -454,11 +483,11 @@ function Game() {
 
   const SPStyle = {
     display: "grid",
-    girdTemplateRows: "500px 15% 15% 15% 55%",
-    gridTemplateAreas: `"${areaName.gameBorad}"\n`
-                      +`"${areaName.controlPanel}"\n`
+    girdTemplateRows: "20px 20px 500px 20px 60px",
+    gridTemplateAreas: `"${areaName.score}"\n`
                       +`"${areaName.gameStatus}"\n`
-                      +`"${areaName.score}"\n`
+                      +`"${areaName.gameBorad}"\n`
+                      +`"${areaName.controlPanel}"\n`
                       +`"${areaName.description}"`
   }
 
@@ -483,11 +512,11 @@ function Game() {
             score={score}
             setScore={setScore}
           />
+          <ScoreBoard score={score}/>
           <GameStatus
             gameoverFlag={gameoverFlag}
             gameclearFlag={gameclearFlag}
           />
-          <ScoreBoard score={score}/>
           <ControlPanel
             x={x}
             setX={setX}
@@ -495,15 +524,17 @@ function Game() {
             barX={barX}
             setBarX={setBarX}
           />
+          <Instruction />
         </div>
       </MediaQuery>
       <MediaQuery query={`(max-width: ${SPsize}px)`}>
         <div style={SPStyle}>
+          
+          <ScoreBoard score={score}/>
           <GameStatus
             gameoverFlag={gameoverFlag}
             gameclearFlag={gameclearFlag}
           />
-          <ScoreBoard score={score}/>
           <GameBoard
             x={x}
             setX={setX}
@@ -528,6 +559,7 @@ function Game() {
             barX={barX}
             setBarX={setBarX}
           />
+          <Instruction />
         </div>
       </MediaQuery>
     </div>
