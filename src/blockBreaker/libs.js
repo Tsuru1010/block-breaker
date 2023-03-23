@@ -33,19 +33,19 @@ export function initializeBlocksArray(){
   return blocksArray;
 }
 
-export function handleClickL(barX, setBarX, startedFlag, setX, x) {
+export function handleClickL(barX, setBarX, y, setX, x) {
   if (barX - 5 - constants.barWidth/2 > 0){
     setBarX(barX - 5);
-    if (startedFlag === false){
+    if (y === constants.initialBallPosition.y){
       setX(x - 5);
     }
   }
 }
 
-export function handleClickR(barX, setBarX, startedFlag, setX, x) {
+export function handleClickR(barX, setBarX, y, setX, x) {
   if (barX + 5 + constants.barWidth/2 < constants.boardWidth){
     setBarX(barX + 5);
-    if (startedFlag === false){
+    if (y === constants.initialBallPosition.y){
       setX(x + 5);
     }
   }

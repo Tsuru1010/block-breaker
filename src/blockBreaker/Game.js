@@ -1,81 +1,13 @@
 import React, { useState } from 'react';
 import MediaQuery from 'react-responsive';
 import * as constants from './constants.js';
-import { handleClickL, handleClickR } from './libs.js';
 import GameBoard from './Gameboard.js';
+import GameStatus from './GameStatus.js';
+import ScoreBoard from './ScoreBoard.js';
+import Instruction from './Instruction.js';
+import ControlPanel from './ControlPanel.js';
 
-export let varStartedFlag = false;
 let debugCounter = 0;
-
-//操作盤のコンポーネント
-const ControlPanel = (props) => {
-
-  const panelStyle = {
-    display:"float",
-    //paddingTop: "0",
-    gridArea: constants.areaName.controlPanel
-  }
-
-  return (
-    <div style={panelStyle}>
-      <button onClick={() => {handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>L</button>
-      <button onClick={() => {handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>R</button>
-    </div>
-  );
-}
-
-function GameStatus(props) {
-  const statusStyle = {
-    gridArea: constants.areaName.gameStatus,
-    backgroundColor:"#ff00ff"
-  }
-  
-  return (
-    <div style={statusStyle}>
-      {props.gameoverFlag ? <p>game over</p> : <p></p>}
-      {props.gameclearFlag ? <p>game clear!</p> : <p></p>}
-    </div>
-  )
-}
-
-function ScoreBoard(props) {
-  const scoreStyle = {
-    gridArea: constants.areaName.score,
-    backgroundColor:"#ff00ff"
-  }
-  
-  return (
-    <p style={scoreStyle}>Score:{props.score}</p>
-  )
-}
-
-function Instruction() {
-  const instructionStyle = {
-    gridArea: constants.areaName.instruction,
-    margin: "10px"
-  }
-
-  return (
-    <div style={instructionStyle}>
-      <h2>遊び方</h2>
-      <ol>
-        <li>
-          <p>ブロック崩しの盤面をクリックしてゲーム開始．</p>
-          <p>クリックした方向にボールが発射．</p>
-        </li>
-        <li>
-          <p>Lボタン，Rボタンでスライドバーを移動可．</p>
-          <p>PCだと，矢印キーでも移動できる．</p>
-          <p>スライドバーを移動させてボールを打ち返せる．</p>
-        </li>
-        <li>
-          <p>ボールを落とさず打ち返し続け，全てのブロックを破壊できればゲームクリア．</p>
-          <p>ボールを落としてしまうとゲームオーバー．</p>
-        </li>
-      </ol>
-    </div>
-  );
-}
 
 function Game() {
   
@@ -87,10 +19,7 @@ function Game() {
 
   // ボール縦位置
   const [y, setY] = useState(constants.initialBallPosition.y);
-  
-  //ゲーム開始フラグ
-  const [startedFlag, setStartedFlag] = useState(varStartedFlag);
-  
+   
   //ゲームオーバーフラグ
   const [gameoverFlag, setGameoverFlag] = useState(false);
 
@@ -119,6 +48,13 @@ function Game() {
                       +`"${constants.areaName.description}"`
   }
 
+  const contents = (
+    <div>
+      
+    </div>
+    
+  );
+
   return (
     <div >
       <MediaQuery query={`(min-width: ${constants.SPsize}px)`}>
@@ -128,8 +64,6 @@ function Game() {
             setX={setX}
             y={y}
             setY={setY}
-            startedFlag={startedFlag}
-            setStartedFlag={setStartedFlag}
             gameoverFlag={gameoverFlag}
             setGameoverFlag={setGameoverFlag}
             setGameclearFlag={setGameclearFlag}
@@ -145,8 +79,8 @@ function Game() {
           />
           <ControlPanel
             x={x}
+            y={y}
             setX={setX}
-            startedFlag={startedFlag}
             barX={barX}
             setBarX={setBarX}
           />
@@ -155,19 +89,11 @@ function Game() {
       </MediaQuery>
       <MediaQuery query={`(max-width: ${constants.SPsize}px)`}>
         <div style={SPStyle}>
-          
-          <ScoreBoard score={score}/>
-          <GameStatus
-            gameoverFlag={gameoverFlag}
-            gameclearFlag={gameclearFlag}
-          />
           <GameBoard
             x={x}
             setX={setX}
             y={y}
             setY={setY}
-            startedFlag={startedFlag}
-            setStartedFlag={setStartedFlag}
             gameoverFlag={gameoverFlag}
             setGameoverFlag={setGameoverFlag}
             setGameclearFlag={setGameclearFlag}
@@ -176,10 +102,15 @@ function Game() {
             score={score}
             setScore={setScore}
           />
+          <ScoreBoard score={score}/>
+          <GameStatus
+            gameoverFlag={gameoverFlag}
+            gameclearFlag={gameclearFlag}
+          />
           <ControlPanel
             x={x}
+            y={y}
             setX={setX}
-            startedFlag={startedFlag}
             barX={barX}
             setBarX={setBarX}
           />

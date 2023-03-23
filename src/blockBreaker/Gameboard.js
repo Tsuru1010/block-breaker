@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as constants from './constants.js';
 import { handleClickL, handleClickR, moveEnd } from './libs.js';
-import { varStartedFlag } from './Game.js';
 
+let varStartedFlag = false;
 let velocity = {x:0, y:0};
 let blockFlagsArray = [true, true, true, true, true, true, true, true,
                        true, true, true, true, true, true, true, true, 
@@ -89,8 +89,8 @@ function Slidebar(props) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.key) {
-        case 'ArrowLeft': handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
-        case 'ArrowRight': handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
+        case 'ArrowLeft': handleClickL(props.barX, props.setBarX, props.y, props.setX, props.x); break;
+        case 'ArrowRight': handleClickR(props.barX, props.setBarX, props.y, props.setX, props.x); break;
         default: break;
       }
     }
@@ -197,6 +197,9 @@ const GameBoard = (props) => {
 
   //ブロック存在フラグ（ture:存在，false:ボールと衝突して消失）
   const [blockFlags, setBlockFlags] = useState(blockFlagsArray);
+ 
+  //ゲーム開始フラグ
+  const [startedFlag, setStartedFlag] = useState(varStartedFlag); 
 
   const boardRef = useRef(null);
 
@@ -237,7 +240,7 @@ const GameBoard = (props) => {
           }
   
           varStartedFlag = true;
-          props.setStartedFlag(varStartedFlag);
+          setStartedFlag(varStartedFlag);
           setVelocityX(velocity.x);
           setVelocityY(velocity.y);
         }
@@ -276,8 +279,6 @@ const GameBoard = (props) => {
         setX={props.setX}
         y={props.y}
         setY={props.setY}
-        startedFlag={props.startedFlag}
-        setStartedFlag={props.setStartedFlag}
         setGameoverFlag={props.setGameoverFlag}
         setGameclearFlag={props.setGameclearFlag}
         velocityX={velocityX}
@@ -289,15 +290,17 @@ const GameBoard = (props) => {
         setMoveXflag={setMoveXflag}
         moveYflag={moveYflag}
         setMoveYflag={setMoveYflag}
+        startedFlag={startedFlag}
+        setStartedFlag={setStartedFlag}
       />
       <Slidebar
         x={props.x}
         setX={props.setX}
         y={props.y}
-        startedFlag={props.startedFlag}
         barX={props.barX}
         setBarX={props.setBarX}
         setMoveYflag={setMoveYflag}
+        startedFlag={startedFlag}
       />
     </div>
   );
