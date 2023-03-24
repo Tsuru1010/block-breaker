@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import MediaQuery from 'react-responsive';
 import * as constants from './constants.js';
-import GameBoard from './Gameboard.js';
+import BoardAndController from './BoardAndController.js';
 import GameStatus from './GameStatus.js';
-import ScoreBoard from './ScoreBoard.js';
 import Instruction from './Instruction.js';
-import ControlPanel from './ControlPanel.js';
 
 let debugCounter = 0;
 
@@ -29,37 +27,30 @@ function Game() {
   //得点
   const [score, setScore] = useState(0);
 
+  //経過時間
+  const [msec, setMsec] = useState(0);
+
   const PCStyle = {
     display: "grid",
     gridTemplateColumns: "33% 33% 33%",
-    girdTemplateRows: "48% 48% 4%",
-    gridTemplateAreas: `"${constants.areaName.score} ${constants.areaName.gameBorad} ${constants.areaName.instruction}"\n`
-                      +`"${constants.areaName.gameStatus} ${constants.areaName.gameBorad} ${constants.areaName.instruction}"\n`
-                      +`"${constants.areaName.gameStatus} ${constants.areaName.controlPanel} ${constants.areaName.instruction}"\n`
+    girdTemplateRows: "50% 50%",
+    gridTemplateAreas: `"${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}"\n`
+                      +`"${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}"\n`
   }
 
   const SPStyle = {
     display: "grid",
-    girdTemplateRows: "20px 20px 500px 20px 60px",
-    gridTemplateAreas: `"${constants.areaName.score}"\n`
+    girdTemplateRows: "auto auto auto auto",
+    gridTemplateAreas: `"${constants.areaName.BaC}"\n`
                       +`"${constants.areaName.gameStatus}"\n`
-                      +`"${constants.areaName.gameBorad}"\n`
-                      +`"${constants.areaName.controlPanel}"\n`
-                      +`"${constants.areaName.description}"`
+                      +`"${constants.areaName.instruction}"`
   }
-
-  const contents = (
-    <div>
-      
-    </div>
-    
-  );
 
   return (
     <div >
       <MediaQuery query={`(min-width: ${constants.SPsize}px)`}>
         <div style={PCStyle}>
-          <GameBoard
+          <BoardAndController
             x={x}
             setX={setX}
             y={y}
@@ -71,25 +62,21 @@ function Game() {
             setBarX={setBarX}
             score={score}
             setScore={setScore}
+            msec={msec}
+            setMsec={setMsec}
           />
-          <ScoreBoard score={score}/>
           <GameStatus
             gameoverFlag={gameoverFlag}
             gameclearFlag={gameclearFlag}
-          />
-          <ControlPanel
-            x={x}
-            y={y}
-            setX={setX}
-            barX={barX}
-            setBarX={setBarX}
+            msec={msec}
+            score={score}
           />
           <Instruction />
         </div>
       </MediaQuery>
       <MediaQuery query={`(max-width: ${constants.SPsize}px)`}>
         <div style={SPStyle}>
-          <GameBoard
+          <BoardAndController
             x={x}
             setX={setX}
             y={y}
@@ -101,18 +88,13 @@ function Game() {
             setBarX={setBarX}
             score={score}
             setScore={setScore}
+            msec={msec}
+            setMsec={setMsec}
           />
-          <ScoreBoard score={score}/>
           <GameStatus
             gameoverFlag={gameoverFlag}
             gameclearFlag={gameclearFlag}
-          />
-          <ControlPanel
-            x={x}
-            y={y}
-            setX={setX}
-            barX={barX}
-            setBarX={setBarX}
+            score={score}
           />
           <Instruction />
         </div>

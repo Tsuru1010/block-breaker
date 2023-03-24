@@ -7,8 +7,11 @@ function GameStatus(props) {
     backgroundColor:"#ff00ff"
   }
   
+  //console.log(props.msec);
+
   return (
     <div style={statusStyle}>
+      <p>Score:{props.score}</p>
       {props.gameoverFlag ? <p>game over</p> : <p></p>}
       {props.gameclearFlag ? <p>game clear!</p> : <p></p>}
     </div>

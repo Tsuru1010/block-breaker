@@ -34,23 +34,28 @@ function Ball(props) {
     // 移動速度
     const step = setTimeout(() => 
       {
-        if (props.moveXflag) {
-          props.setX(props.x + props.velocityX);
-        } else {
-          props.setX(props.x - props.velocityX);
+        if (props.startedFlag === true) {
+          if (props.moveXflag) {
+            props.setX(props.x + props.velocityX);
+          } else {
+            props.setX(props.x - props.velocityX);
+          }
+          if (props.moveYflag) {
+            props.setY(props.y + props.velocityY);
+          } else {
+            props.setY(props.y - props.velocityY);
+          }
+  
+          props.setMsec(props.msec + 20);
+  
         }
-        if (props.moveYflag) {
-          props.setY(props.y + props.velocityY);
-        } else {
-          props.setY(props.y - props.velocityY);
-        }
-
+        
       }
-    , 10);
+    , 20);
 
     return () => clearTimeout(step);
 
-  }, [props.x, props.y, props.moveXflag, props.moveYflag, props])
+  }, [props.startedFlag, props.x, props.y, /*props.moveXflag, props.moveYflag, props*/])
 
   useEffect(() => {
     if (props.score === 32) {
@@ -89,8 +94,8 @@ function Slidebar(props) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       switch (e.key) {
-        case 'ArrowLeft': handleClickL(props.barX, props.setBarX, props.y, props.setX, props.x); break;
-        case 'ArrowRight': handleClickR(props.barX, props.setBarX, props.y, props.setX, props.x); break;
+        case 'ArrowLeft': handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
+        case 'ArrowRight': handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x); break;
         default: break;
       }
     }
@@ -204,7 +209,6 @@ const GameBoard = (props) => {
   const boardRef = useRef(null);
 
   const boardStyle = {
-    gridArea: constants.areaName.gameBorad,
     position: "relative",
     width: constants.boardWidth + "px",
     height: constants.boardHeight + "px",
@@ -216,7 +220,7 @@ const GameBoard = (props) => {
     if (boardElm) {
       const setVelocity = (e) => {
 
-        if (varStartedFlag === true){
+        if (startedFlag === true){
           return;
         } else {
           const relativeClickPosition = {
@@ -281,6 +285,8 @@ const GameBoard = (props) => {
         setY={props.setY}
         setGameoverFlag={props.setGameoverFlag}
         setGameclearFlag={props.setGameclearFlag}
+        msec={props.msec}
+        setMsec={props.setMsec}
         velocityX={velocityX}
         setVelocityX={setVelocityX}
         velocityY={velocityY}
@@ -305,4 +311,55 @@ const GameBoard = (props) => {
     </div>
   );
 }
-export default GameBoard;
+
+//操作盤のコンポーネント
+function ControlPanel(props) {
+
+  const panelStyle = {
+    display:"float",
+    //paddingTop: "0",
+  }
+
+  return (
+    <div style={panelStyle}>
+      <button onClick={() => {handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>L</button>
+      <button onClick={() => {handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>R</button>
+    </div>
+  );
+}
+
+//BaC：Board and Controller 長いので省略して記述
+//レイアウト等で利点があり，2つのコンポーネントをまとめる
+function BoardAndController(props) {  
+  const BaCstyle = {
+    gridArea:constants.areaName.BaC
+  }
+
+  return (
+    <div style={BaCstyle}>
+      <GameBoard
+        x={props.x}
+        setX={props.setX}
+        y={props.y}
+        setY={props.setY}
+        gameoverFlag={props.gameoverFlag}
+        setGameoverFlag={props.setGameoverFlag}
+        setGameclearFlag={props.setGameclearFlag}
+        barX={props.barX}
+        setBarX={props.setBarX}
+        score={props.score}
+        setScore={props.setScore}
+        msec={props.msec}
+        setMsec={props.setMsec}
+      />
+      <ControlPanel
+        x={props.x}
+        y={props.y}
+        setX={props.setX}
+        barX={props.barX}
+        setBarX={props.setBarX}
+      />
+    </div>
+  );
+}
+export default BoardAndController

@@ -13,9 +13,7 @@ export const initialBallPosition = {x:boardWidth/2, y:475};
 export const initialBarPosition = {x:boardWidth/2, y:480};
 export const blocksArray = initializeBlocksArray();
 export const areaName = {
-  gameBorad:"gameBoardArea",
+  BaC:"BoardAndControllerArea",
   gameStatus:"gameStatusArea",
-  score:"ScoreArea",
-  controlPanel:"controlPanelArea",
   instruction:"instructionArea"
 }
