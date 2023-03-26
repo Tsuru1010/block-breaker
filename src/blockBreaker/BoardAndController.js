@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as constants from './constants.js';
-import { handleClickL, handleClickR, moveEnd } from './libs.js';
+import { handleClickL, handleClickR, moveEnd, detectCollision } from './libs.js';
 
 let varStartedFlag = false;
 let velocity = {x:0, y:0};
@@ -35,6 +35,10 @@ function Ball(props) {
     const step = setTimeout(() => 
       {
         if (props.startedFlag === true) {
+          if (props.msec === constants.speedUpTiming || props.msec === constants.speedUpTiming*2) {
+            props.setVelocityX(props.velocityX * 2);
+          }
+
           if (props.moveXflag) {
             props.setX(props.x + props.velocityX);
           } else {
@@ -46,16 +50,15 @@ function Ball(props) {
             props.setY(props.y - props.velocityY);
           }
   
-          props.setMsec(props.msec + 20);
+          props.setMsec(props.msec + 10);
   
         }
-        
       }
-    , 20);
+    , 10);
 
     return () => clearTimeout(step);
 
-  }, [props.startedFlag, props.x, props.y, /*props.moveXflag, props.moveYflag, props*/])
+  }, [props.startedFlag, props.x, props.y])
 
   useEffect(() => {
     if (props.score === 32) {
@@ -141,7 +144,7 @@ function Block(props) {
       // ブロックに当たったら方向を逆にする
     
       //上端との衝突
-      if (Math.floor(props.y) + constants.ballSize/2 === props.blockTopY && props.blockLeftX <= props.x - constants.ballSize/2 && props.x + constants.ballSize/2 <= props.blockLeftX + constants.blockWidth) {
+      if (detectCollision(props.x, props.y, props.blockTopY, props.blockLeftX, 0)) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(false);
@@ -149,7 +152,7 @@ function Block(props) {
       }
 
       //左端との衝突
-      if (Math.floor(props.x) + constants.ballSize/2 === props.blockLeftX && props.blockTopY <= props.y - constants.ballSize/2 && props.y + constants.ballSize/2 <= props.blockTopY + constants.blockWidth) {
+      if (detectCollision(props.x, props.y, props.blockTopY, props.blockLeftX, 1)) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(false);
@@ -157,7 +160,7 @@ function Block(props) {
       }
 
       //下端との衝突
-      if (Math.floor(props.y) - constants.ballSize/2 === props.blockTopY + constants.blockHeight &&  props.blockLeftX <= props.x - constants.ballSize/2 && props.x + constants.ballSize/2 <= props.blockLeftX + constants.blockWidth) {
+      if (detectCollision(props.x, props.y, props.blockTopY, props.blockLeftX, 2)) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(true);
@@ -165,7 +168,7 @@ function Block(props) {
       }
 
       //右端との衝突
-      if (Math.floor(props.x) - constants.ballSize/2 === props.blockLeftX + constants.blockWidth && props.blockTopY <= props.y - constants.ballSize/2 && props.y + constants.ballSize/2 <= props.blockTopY + constants.blockWidth) {
+      if (detectCollision(props.x, props.y, props.blockTopY, props.blockLeftX, 3)) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(true);
@@ -230,8 +233,8 @@ const GameBoard = (props) => {
   
           const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
   
-          velocity.x = relativeClickPosition.x / hypotenuse;
-          velocity.y = relativeClickPosition.y / hypotenuse;
+          velocity.x = relativeClickPosition.x / hypotenuse / 2;
+          velocity.y = relativeClickPosition.y / hypotenuse / 2;
   
           if (velocity.x < 0) {
             setMoveXflag(false);

@@ -9,6 +9,7 @@ export const barWidth = 80;
 export const barHeight = 20;
 export const blockWidth = boardWidth/8;
 export const blockHeight = 20;
+export const speedUpTiming = 20 * 1000;
 export const initialBallPosition = {x:boardWidth/2, y:475};
 export const initialBarPosition = {x:boardWidth/2, y:480};
 export const blocksArray = initializeBlocksArray();

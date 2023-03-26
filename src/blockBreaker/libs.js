@@ -55,3 +55,22 @@ export function moveEnd(setVelocityX, setVelocityY) {
   setVelocityX(0);
   setVelocityY(0);
 }
+
+export function detectCollision(x, y, blockTopY, blockLeftX, switchingNum) {
+  switch (switchingNum) {
+    //上端との衝突
+    case 0 : return (blockTopY <= y + constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + 2 && blockLeftX <= x - constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + constants.blockWidth);
+    
+    //左端との衝突
+    case 1 : return (blockLeftX <= x + constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + 2 && blockTopY <= y - constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + constants.blockWidth);
+    
+    //下端との衝突
+    case 2 : return (blockTopY + constants.blockHeight <= y + constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + constants.blockHeight - 2 && blockLeftX <= x - constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + constants.blockWidth);
+    
+    //右端との衝突
+    case 3 : return (blockLeftX + constants.blockHeight <= x + constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + constants.blockHeight + 2 && blockTopY <= y - constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + constants.blockWidth);
+    
+    default: break;
+  }
+  return;
+}
