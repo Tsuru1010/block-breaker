@@ -37,6 +37,7 @@ function Ball(props) {
         if (props.startedFlag === true) {
           if (props.msec === constants.speedUpTiming || props.msec === constants.speedUpTiming*2) {
             props.setVelocityX(props.velocityX * 2);
+            props.setVelocityY(props.velocityY * 2);
           }
 
           if (props.moveXflag) {
