@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as constants from './constants.js';
-import { handleClickL, handleClickR, moveEnd, detectCollision } from './libs.js';
+import { handleClickL, handleClickR, setVelocity, detectCollision } from './libs.js';
 
 let varStartedFlag = false;
-let velocity = {x:0, y:0};
 let blockFlagsArray = [true, true, true, true, true, true, true, true,
                        true, true, true, true, true, true, true, true, 
                        true, true, true, true, true, true, true, true, 
@@ -23,7 +22,7 @@ function Ball(props) {
     }
     if (props.y + constants.ballSize/2 >= constants.boardHeight) {
       props.setGameoverFlag(true);
-      moveEnd(props.setVelocityX, props.setVelocityY);
+      setVelocity(props.setVelocityX, props.setVelocityY, 0, 0);
     }
     if (props.x - constants.ballSize/2 <= 0) {
       props.setMoveXflag(true);
@@ -36,8 +35,7 @@ function Ball(props) {
       {
         if (props.startedFlag === true) {
           if (props.msec === constants.speedUpTiming || props.msec === constants.speedUpTiming*2) {
-            props.setVelocityX(props.velocityX * 2);
-            props.setVelocityY(props.velocityY * 2);
+            setVelocity(props.setVelocityX, props.setVelocityY, props.velocityX * 2, props.velocityY * 2);
           }
 
           if (props.moveXflag) {
@@ -64,7 +62,7 @@ function Ball(props) {
   useEffect(() => {
     if (props.score === 32) {
       props.setGameclearFlag(true);
-      moveEnd(props.setVelocityX, props.setVelocityY);
+      setVelocity(props.setVelocityX, props.setVelocityY, 0, 0);
       
     }
   }, [props.score])
@@ -192,12 +190,6 @@ function Block(props) {
 //ゲームディスプレイのコンポーネント
 const GameBoard = (props) => {  
 
-  //ボール速度絶対値（x軸方向）
-  const [velocityX, setVelocityX] = useState(0);
-  
-  //ボール速度絶対値（y軸方向）
-  const [velocityY, setVelocityY] = useState(0);
-
   // 横移動フラグ（true:右に移動，false:左に移動）
   const [moveXflag, setMoveXflag] = useState(true);
         
@@ -222,7 +214,8 @@ const GameBoard = (props) => {
   useEffect(() => {
     let boardElm = boardRef.current;
     if (boardElm) {
-      const setVelocity = (e) => {
+      const initializeVelocity = (e) => {
+        let initialVelocity = {x:0, y:0};
 
         if (startedFlag === true){
           return;
@@ -234,30 +227,29 @@ const GameBoard = (props) => {
   
           const hypotenuse = Math.sqrt(relativeClickPosition.x**2 + relativeClickPosition.y**2);
   
-          velocity.x = relativeClickPosition.x / hypotenuse / 2;
-          velocity.y = relativeClickPosition.y / hypotenuse / 2;
+          initialVelocity.x = relativeClickPosition.x / hypotenuse / 2;
+          initialVelocity.y = relativeClickPosition.y / hypotenuse / 2;
   
-          if (velocity.x < 0) {
+          if (initialVelocity.x < 0) {
             setMoveXflag(false);
-            velocity.x = -velocity.x;
+            initialVelocity.x = -initialVelocity.x;
           }
   
-          if (velocity.y < 0) {
+          if (initialVelocity.y < 0) {
             setMoveYflag(false);
-            velocity.y = -velocity.y;
+            initialVelocity.y = -initialVelocity.y;
           }
   
           varStartedFlag = true;
           setStartedFlag(varStartedFlag);
-          setVelocityX(velocity.x);
-          setVelocityY(velocity.y);
+          setVelocity(props.setVelocityX, props.setVelocityY, initialVelocity.x, initialVelocity.y);
         }
       }
   
-      boardElm.addEventListener('click', setVelocity);
+      boardElm.addEventListener('click', initializeVelocity);
       
       return () => {
-        boardElm.removeEventListener('click', setVelocity);  
+        boardElm.removeEventListener('click', initializeVelocity);  
       }
     }
   }, [props.x]);
@@ -291,10 +283,10 @@ const GameBoard = (props) => {
         setGameclearFlag={props.setGameclearFlag}
         msec={props.msec}
         setMsec={props.setMsec}
-        velocityX={velocityX}
-        setVelocityX={setVelocityX}
-        velocityY={velocityY}
-        setVelocityY={setVelocityY}
+        velocityX={props.velocityX}
+        setVelocityX={props.setVelocityX}
+        velocityY={props.velocityY}
+        setVelocityY={props.setVelocityY}
         score={props.score}
         moveXflag={moveXflag}
         setMoveXflag={setMoveXflag}
@@ -346,6 +338,10 @@ function BoardAndController(props) {
         setX={props.setX}
         y={props.y}
         setY={props.setY}
+        velocityX={props.velocityX}
+        setVelocityX={props.setVelocityX}
+        velocityY={props.velocityY}
+        setVelocityY={props.setVelocityY}
         gameoverFlag={props.gameoverFlag}
         setGameoverFlag={props.setGameoverFlag}
         setGameclearFlag={props.setGameclearFlag}

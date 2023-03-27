@@ -1,5 +1,7 @@
 import * as constants from './constants.js';
 
+let varVelocity = {x:0, y:0};
+
 export function calcBoardWidth() {
   const browserWidth = document.body.clientWidth;
 
@@ -51,9 +53,9 @@ export function handleClickR(barX, setBarX, startedFlag, setX, x) {
   }
 }
 
-export function moveEnd(setVelocityX, setVelocityY) {
-  setVelocityX(0);
-  setVelocityY(0);
+export function setVelocity(setVelocityX, setVelocityY, velocityX, velocityY) {
+  setVelocityX(velocityX);
+  setVelocityY(velocityY);
 }
 
 export function detectCollision(x, y, blockTopY, blockLeftX, switchingNum) {
@@ -73,4 +75,13 @@ export function detectCollision(x, y, blockTopY, blockLeftX, switchingNum) {
     default: break;
   }
   return;
+}
+
+export function handlePauseButton(setPauseFlag, velocityX, setVelocityX, velocityY, setVelocityY) {
+  setPauseFlag(true);
+  
+  varVelocity.x = velocityX;
+  varVelocity.y = velocityY;
+
+  setVelocity(setVelocityX, setVelocityY, 0, 0);
 }

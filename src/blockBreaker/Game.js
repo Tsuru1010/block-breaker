@@ -4,8 +4,10 @@ import * as constants from './constants.js';
 import BoardAndController from './BoardAndController.js';
 import GameStatus from './GameStatus.js';
 import Instruction from './Instruction.js';
+import Header from './Header.js';
 
 let debugCounter = 0;
+let varPauseFlag = false;
 
 function Game() {
   
@@ -17,6 +19,12 @@ function Game() {
 
   // ボール縦位置
   const [y, setY] = useState(constants.initialBallPosition.y);
+
+  //ボール速度絶対値（x軸方向）
+  const [velocityX, setVelocityX] = useState(0);
+  
+  //ボール速度絶対値（y軸方向）
+  const [velocityY, setVelocityY] = useState(0);
    
   //ゲームオーバーフラグ
   const [gameoverFlag, setGameoverFlag] = useState(false);
@@ -30,17 +38,17 @@ function Game() {
   //経過時間
   const [msec, setMsec] = useState(0);
 
+  const [pauseFlag, setPauseFlag] = useState(varPauseFlag);
+
   const PCStyle = {
     display: "grid",
     gridTemplateColumns: "33% 33% 33%",
-    girdTemplateRows: "50% 50%",
     gridTemplateAreas: `"${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}"\n`
-                      +`"${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}"\n`
   }
 
   const SPStyle = {
     display: "grid",
-    girdTemplateRows: "auto auto auto auto",
+    girdTemplateRows: "auto auto auto",
     gridTemplateAreas: `"${constants.areaName.BaC}"\n`
                       +`"${constants.areaName.gameStatus}"\n`
                       +`"${constants.areaName.instruction}"`
@@ -49,12 +57,23 @@ function Game() {
   return (
     <div >
       <MediaQuery query={`(min-width: ${constants.SPsize}px)`}>
+        <Header 
+          setPauseFlag={setPauseFlag}
+          velocityX={velocityX}
+          setVelocityX={setVelocityX}
+          velocityY={velocityY}
+          setVelocityY={setVelocityY}
+        />
         <div style={PCStyle}>
           <BoardAndController
             x={x}
             setX={setX}
             y={y}
             setY={setY}
+            velocityX={velocityX}
+            setVelocityX={setVelocityX}
+            velocityY={velocityY}
+            setVelocityY={setVelocityY}
             gameoverFlag={gameoverFlag}
             setGameoverFlag={setGameoverFlag}
             setGameclearFlag={setGameclearFlag}
@@ -75,12 +94,23 @@ function Game() {
         </div>
       </MediaQuery>
       <MediaQuery query={`(max-width: ${constants.SPsize}px)`}>
+        <Header
+          setPauseFlag={setPauseFlag}
+          velocityX={velocityX}
+          setVelocityX={setVelocityX}
+          velocityY={velocityY}
+          setVelocityY={setVelocityY}
+        />
         <div style={SPStyle}>
           <BoardAndController
             x={x}
             setX={setX}
             y={y}
             setY={setY}
+            velocityX={velocityX}
+            setVelocityX={setVelocityX}
+            velocityY={velocityY}
+            setVelocityY={setVelocityY}
             gameoverFlag={gameoverFlag}
             setGameoverFlag={setGameoverFlag}
             setGameclearFlag={setGameclearFlag}
