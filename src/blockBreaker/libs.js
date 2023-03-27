@@ -62,13 +62,13 @@ export function detectCollision(x, y, blockTopY, blockLeftX, switchingNum) {
     case 0 : return (blockTopY <= y + constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + 2 && blockLeftX <= x + constants.ballSize/2 && x - constants.ballSize/2 <= blockLeftX + constants.blockWidth);
     
     //左端との衝突
-    case 1 : return (blockLeftX <= x + constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + 2 && blockTopY <= y - constants.ballSize/2 && y + constants.ballSize/2 <= blockTopY + constants.blockWidth);
+    case 1 : return (blockLeftX <= x + constants.ballSize/2 && x + constants.ballSize/2 <= blockLeftX + 2 && blockTopY <= y + constants.ballSize/2 && y - constants.ballSize/2 <= blockTopY + constants.blockHeight);
     
     //下端との衝突
-    case 2 : return (blockTopY + constants.blockHeight - 2 <= y - constants.ballSize/2 && y - constants.ballSize/2 <= blockTopY + constants.blockHeight - 2 && blockLeftX <= x + constants.ballSize/2 && x - constants.ballSize/2 <= blockLeftX + constants.blockWidth);
+    case 2 : return (blockTopY + constants.blockHeight - 2 <= y - constants.ballSize/2 && y - constants.ballSize/2 <= blockTopY + constants.blockHeight && blockLeftX <= x + constants.ballSize/2 && x - constants.ballSize/2 <= blockLeftX + constants.blockWidth);
     
     //右端との衝突
-    case 3 : return (blockLeftX + constants.blockWidth - 2 <= x - constants.ballSize/2 && x - constants.ballSize/2 <= blockLeftX + constants.blockWidth + 2 && blockTopY <= y + constants.ballSize/2 && y - constants.ballSize/2 <= blockTopY + constants.blockHeight);
+    case 3 : return (blockLeftX + constants.blockWidth - 2 <= x - constants.ballSize/2 && x - constants.ballSize/2 <= blockLeftX + constants.blockWidth && blockTopY <= y + constants.ballSize/2 && y - constants.ballSize/2 <= blockTopY + constants.blockHeight);
     
     default: break;
   }
