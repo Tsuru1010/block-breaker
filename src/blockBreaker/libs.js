@@ -4,7 +4,7 @@ let varVelocity = {x:0, y:0};
 
 export function calcBoardWidth() {
   const browserWidth = document.body.clientWidth;
-
+  
   if (browserWidth) {
     if (browserWidth > constants.SPsize) {
       return browserWidth/3 - constants.borderSize*2;
@@ -84,4 +84,20 @@ export function handlePauseButton(setPauseFlag, velocityX, setVelocityX, velocit
   varVelocity.y = velocityY;
 
   setVelocity(setVelocityX, setVelocityY, 0, 0);
+}
+
+export function handleContinue(setVelocityX, setVelocityY, setPauseFlag) {
+  setVelocity(setVelocityX, setVelocityY, varVelocity.x, varVelocity.y);
+  setPauseFlag(false);
+}
+
+export function handleRetry(setBarX, setX, setY, setVelocityX, setVelocityY, setScore, setMsec, setRetryFlag, setPauseFlag) {
+  setBarX(constants.initialBarPosition);
+  setX(constants.initialBallPosition.x);
+  setY(constants.initialBallPosition.y);
+  setVelocity(setVelocityX, setVelocityY, 0, 0);
+  setScore(0);
+  setMsec(0);
+  setRetryFlag(true);
+  setPauseFlag(false);
 }

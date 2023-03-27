@@ -212,6 +212,20 @@ const GameBoard = (props) => {
   };
 
   useEffect(() => {
+    if (props.retryFlag === true) {
+      blockFlagsArray = [true, true, true, true, true, true, true, true,
+                         true, true, true, true, true, true, true, true, 
+                         true, true, true, true, true, true, true, true, 
+                         true, true, true, true, true, true, true, true];
+      varStartedFlag = false;
+      setMoveXflag(true);
+      setMoveYflag(false);
+      setBlockFlags(blockFlagsArray);
+      setStartedFlag(varStartedFlag);
+    }
+  }, [props.retryFlag])
+
+  useEffect(() => {
     let boardElm = boardRef.current;
     if (boardElm) {
       const initializeVelocity = (e) => {
@@ -351,6 +365,7 @@ function BoardAndController(props) {
         setScore={props.setScore}
         msec={props.msec}
         setMsec={props.setMsec}
+        retryFlag={props.retryFlag}
       />
       <ControlPanel
         x={props.x}
@@ -362,4 +377,4 @@ function BoardAndController(props) {
     </div>
   );
 }
-export default BoardAndController
+export default BoardAndController;

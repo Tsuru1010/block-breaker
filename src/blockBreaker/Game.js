@@ -5,6 +5,7 @@ import BoardAndController from './BoardAndController.js';
 import GameStatus from './GameStatus.js';
 import Instruction from './Instruction.js';
 import Header from './Header.js';
+import PauseMenu from './PauseMenu.js';
 
 let debugCounter = 0;
 let varPauseFlag = false;
@@ -38,7 +39,11 @@ function Game() {
   //経過時間
   const [msec, setMsec] = useState(0);
 
+  //ポーズメニューを開いたかどうか判断するフラグ
   const [pauseFlag, setPauseFlag] = useState(varPauseFlag);
+
+  //Retryボタンを押した時に真になるフラグ
+  const [retryFlag, setRetryFlag] = useState(false);
 
   const PCStyle = {
     display: "grid",
@@ -83,6 +88,7 @@ function Game() {
             setScore={setScore}
             msec={msec}
             setMsec={setMsec}
+            retryFlag={retryFlag}
           />
           <GameStatus
             gameoverFlag={gameoverFlag}
@@ -91,6 +97,20 @@ function Game() {
             score={score}
           />
           <Instruction />
+          {pauseFlag ? 
+            <PauseMenu 
+              setBarX={setBarX} 
+              setX={setX} 
+              setY={setY}
+              setVelocityX={setVelocityX}
+              setVelocityY={setVelocityY}
+              setScore={setScore}
+              setMsec={setMsec}
+              setRetryFlag={setRetryFlag}
+              setPauseFlag={setPauseFlag}
+            /> 
+            : <p></p>
+          }
         </div>
       </MediaQuery>
       <MediaQuery query={`(max-width: ${constants.SPsize}px)`}>
@@ -127,6 +147,20 @@ function Game() {
             score={score}
           />
           <Instruction />
+          {pauseFlag ? 
+            <PauseMenu 
+              setBarX={setBarX} 
+              setX={setX} 
+              setY={setY}
+              setVelocityX={setVelocityX}
+              setVelocityY={setVelocityY}
+              setScore={setScore}
+              setMsec={setMsec}
+              setRetryFlag={setRetryFlag}
+              setPauseFlag={setPauseFlag}
+            /> 
+            : <p></p>
+          }
         </div>
       </MediaQuery>
     </div>
