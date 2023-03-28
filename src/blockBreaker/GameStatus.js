@@ -4,7 +4,7 @@ import { areaName } from './constants.js';
 function GameStatus(props) {
   const statusStyle = {
     gridArea: areaName.gameStatus,
-    backgroundColor:"#ff00ff"
+    backgroundColor:"#ffffff"
   }
   
   //console.log(props.msec);

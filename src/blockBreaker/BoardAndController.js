@@ -329,7 +329,8 @@ const GameBoard = (props) => {
 function ControlPanel(props) {
 
   const panelStyle = {
-    display:"float",
+    display:"flex",
+    justifyContent: "center",
     //paddingTop: "0",
   }
 
