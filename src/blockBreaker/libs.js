@@ -92,7 +92,7 @@ export function handleContinue(setVelocityX, setVelocityY, setPauseFlag) {
 }
 
 export function handleRetry(setBarX, setX, setY, setVelocityX, setVelocityY, setScore, setMsec, setRetryFlag, setPauseFlag) {
-  setBarX(constants.initialBarPosition);
+  setBarX(constants.initialBarPosition.x);
   setX(constants.initialBallPosition.x);
   setY(constants.initialBallPosition.y);
   setVelocity(setVelocityX, setVelocityY, 0, 0);

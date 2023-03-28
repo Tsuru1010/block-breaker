@@ -49,15 +49,15 @@ function Ball(props) {
             props.setY(props.y - props.velocityY);
           }
   
-          props.setMsec(props.msec + 10);
+          props.setMsec(props.msec + 16);
   
         }
       }
-    , 10);
+    , 16);
 
     return () => clearTimeout(step);
 
-  }, [props.startedFlag, props.x, props.y])
+  }, [props.startedFlag, props.pauseFlag, props.x, props.y])
 
   useEffect(() => {
     if (props.score === 32) {
@@ -85,8 +85,8 @@ function Ball(props) {
 function Slidebar(props) {
   const barStyle = {  
     position: "absolute",
-    top:constants.initialBarPosition.y,
-    left: props.barX - constants.barWidth/2,
+    top:constants.initialBarPosition.y + 'px',
+    left: props.barX - constants.barWidth/2 + 'px',
     height:constants.barHeight + "px",
     width:constants.barWidth + "px",
     backgroundColor:"#000000"
@@ -218,10 +218,12 @@ const GameBoard = (props) => {
                          true, true, true, true, true, true, true, true, 
                          true, true, true, true, true, true, true, true];
       varStartedFlag = false;
+      varScore = 0;
       setMoveXflag(true);
       setMoveYflag(false);
       setBlockFlags(blockFlagsArray);
-      setStartedFlag(varStartedFlag);
+      setStartedFlag(false);
+      props.setRetryFlag(false);
     }
   }, [props.retryFlag])
 
@@ -266,7 +268,7 @@ const GameBoard = (props) => {
         boardElm.removeEventListener('click', initializeVelocity);  
       }
     }
-  }, [props.x]);
+  }, [props.x, props.retryFlag]);
 
   return (
     <div
@@ -302,6 +304,7 @@ const GameBoard = (props) => {
         velocityY={props.velocityY}
         setVelocityY={props.setVelocityY}
         score={props.score}
+        pauseFlag={props.pauseFlag}
         moveXflag={moveXflag}
         setMoveXflag={setMoveXflag}
         moveYflag={moveYflag}
@@ -366,6 +369,8 @@ function BoardAndController(props) {
         msec={props.msec}
         setMsec={props.setMsec}
         retryFlag={props.retryFlag}
+        setRetryFlag={props.setRetryFlag}
+        pauseFlag={props.pauseFlag}
       />
       <ControlPanel
         x={props.x}

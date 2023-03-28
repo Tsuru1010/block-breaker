@@ -88,6 +88,7 @@ function Game() {
             setScore={setScore}
             msec={msec}
             setMsec={setMsec}
+            pauseFlag={pauseFlag}
             retryFlag={retryFlag}
           />
           <GameStatus
@@ -140,6 +141,9 @@ function Game() {
             setScore={setScore}
             msec={msec}
             setMsec={setMsec}
+            pauseFlag={pauseFlag}
+            retryFlag={retryFlag}
+            setRetryFlag={setRetryFlag}
           />
           <GameStatus
             gameoverFlag={gameoverFlag}
