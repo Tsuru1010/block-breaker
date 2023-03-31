@@ -48,6 +48,8 @@ function PauseMenu(props) {
             setMsec={props.setMsec}
             setRetryFlag={props.setRetryFlag}
             setPauseFlag={props.setPauseFlag}
+            setGameclearFlag={props.setGameclearFlag}
+            setGameoverFlag={props.setGameoverFlag}
           />
         </div>
       </div>

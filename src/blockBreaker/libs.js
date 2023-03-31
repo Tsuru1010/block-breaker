@@ -91,13 +91,15 @@ export function handleContinue(setVelocityX, setVelocityY, setPauseFlag) {
   setPauseFlag(false);
 }
 
-export function handleRetry(setBarX, setX, setY, setVelocityX, setVelocityY, setScore, setMsec, setRetryFlag, setPauseFlag) {
+export function handleRetry(setBarX, setX, setY, setVelocityX, setVelocityY, setScore, setMsec, setRetryFlag, setPauseFlag, setGameclearFlag, setGameoverFlag) {
   setBarX(constants.initialBarPosition.x);
   setX(constants.initialBallPosition.x);
   setY(constants.initialBallPosition.y);
   setVelocity(setVelocityX, setVelocityY, 0, 0);
   setScore(0);
   setMsec(0);
+  setGameclearFlag(false);
+  setGameoverFlag(false);
   setRetryFlag(true);
   setPauseFlag(false);
 }

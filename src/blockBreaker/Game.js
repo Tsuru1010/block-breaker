@@ -88,14 +88,26 @@ function Game() {
             setScore={setScore}
             msec={msec}
             setMsec={setMsec}
-            pauseFlag={pauseFlag}
             retryFlag={retryFlag}
+            setRetryFlag={setRetryFlag}
+            pauseFlag={pauseFlag}
           />
           <GameStatus
+            setBarX={setBarX} 
+            setX={setX} 
+            setY={setY}
+            setVelocityX={setVelocityX}
+            setVelocityY={setVelocityY}
+            setRetryFlag={setRetryFlag}
+            setPauseFlag={setPauseFlag}
             gameoverFlag={gameoverFlag}
+            setGameclearFlag={setGameclearFlag}
             gameclearFlag={gameclearFlag}
+            setGameoverFlag={setGameoverFlag}
             msec={msec}
+            setMsec={setMsec}
             score={score}
+            setScore={setScore}
           />
           <Instruction />
           {pauseFlag ? 
@@ -109,6 +121,8 @@ function Game() {
               setMsec={setMsec}
               setRetryFlag={setRetryFlag}
               setPauseFlag={setPauseFlag}
+              setGameclearFlag={setGameclearFlag}
+              setGameoverFlag={setGameoverFlag}
             /> 
             : <p></p>
           }
@@ -141,14 +155,26 @@ function Game() {
             setScore={setScore}
             msec={msec}
             setMsec={setMsec}
-            pauseFlag={pauseFlag}
             retryFlag={retryFlag}
             setRetryFlag={setRetryFlag}
+            pauseFlag={pauseFlag}
           />
           <GameStatus
+            setBarX={setBarX} 
+            setX={setX} 
+            setY={setY}
+            setVelocityX={setVelocityX}
+            setVelocityY={setVelocityY}
+            setRetryFlag={setRetryFlag}
+            setPauseFlag={setPauseFlag}
             gameoverFlag={gameoverFlag}
+            setGameclearFlag={setGameclearFlag}
             gameclearFlag={gameclearFlag}
+            setGameoverFlag={setGameoverFlag}
+            msec={msec}
+            setScore={setScore}
             score={score}
+            setMsec={setMsec}
           />
           <Instruction />
           {pauseFlag ? 
@@ -162,6 +188,8 @@ function Game() {
               setMsec={setMsec}
               setRetryFlag={setRetryFlag}
               setPauseFlag={setPauseFlag}
+              setGameclearFlag={setGameclearFlag}
+              setGameoverFlag={setGameoverFlag}
             /> 
             : <p></p>
           }

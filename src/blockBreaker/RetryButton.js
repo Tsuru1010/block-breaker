@@ -11,7 +11,9 @@ function RetryButton(props) {
                 props.setScore,
                 props.setMsec,
                 props.setRetryFlag,
-                props.setPauseFlag
+                props.setPauseFlag,
+                props.setGameclearFlag,
+                props.setGameoverFlag
                 );
     }}>
       Retry
