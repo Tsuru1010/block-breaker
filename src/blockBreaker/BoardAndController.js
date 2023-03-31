@@ -68,12 +68,12 @@ function Ball(props) {
   }, [props.score])
 
   const ballStyle = {
-    position: "absolute",
+    position: 'absolute',
     top: props.y - constants.ballSize/2,
     left: props.x - constants.ballSize/2,
-    width: constants.ballSize + "px",
-    height: constants.ballSize + "px",
-    backgroundColor:"#000000"
+    width: constants.ballSize + 'px',
+    height: constants.ballSize + 'px',
+    backgroundColor:'#000000'
   }
 
   return (
@@ -84,12 +84,12 @@ function Ball(props) {
 //スライドバー（ボールを打ち返すやつ）のコンポーネント
 function Slidebar(props) {
   const barStyle = {  
-    position: "absolute",
+    position: 'absolute',
     top:constants.initialBarPosition.y + 'px',
     left: props.barX - constants.barWidth/2 + 'px',
-    height:constants.barHeight + "px",
-    width:constants.barWidth + "px",
-    backgroundColor:"#000000"
+    height:constants.barHeight + 'px',
+    width:constants.barWidth + 'px',
+    backgroundColor:'#000000'
   }
   
   
@@ -127,27 +127,31 @@ function Slidebar(props) {
 function Block(props) {
   
   const blockStyle = {
-    display: props.flag ? "inline-block" : "none",
-    position: "absolute",
+    display: props.flag ? 'inline-block' : 'none',
+    position: 'absolute',
     top: props.blockTopY,
     left: props.blockLeftX,
-    height: constants.blockHeight + "px",
-    width: constants.blockWidth + "px",
-    backgroundColor: "#00ff00",
-    border: "solid 1px #ff0000",
+    height: constants.blockHeight + 'px',
+    width: constants.blockWidth + 'px',
+    backgroundColor: '#00ff00',
+    border: 'solid 1px #ff0000',
   }
 
   useEffect(() => {
     
+    // ブロックに当たったら方向を逆にする
     if (props.flag){
-      // ブロックに当たったら方向を逆にする
-    
+      let detictionFlag = false;
+
       //上端との衝突
       if (detectCollision(props.x, props.y, props.blockTopY, props.blockLeftX, 0)) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(false);
-        varScore++;
+        if (detictionFlag === false) {
+          varScore++;
+          detictionFlag = true;
+        }
       }
 
       //左端との衝突
@@ -155,7 +159,10 @@ function Block(props) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(false);
-        varScore++;
+        if (detictionFlag === false) {
+          varScore++;
+          detictionFlag = true;
+        }
       }
 
       //下端との衝突
@@ -163,7 +170,10 @@ function Block(props) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveYflag(true);
-        varScore++;
+        if (detictionFlag === false) {
+          varScore++;
+          detictionFlag = true;
+        }
       }
 
       //右端との衝突
@@ -171,7 +181,10 @@ function Block(props) {
         blockFlagsArray[props.index] = false;
         props.setBlockFlags(blockFlagsArray);
         props.setMoveXflag(true);
-        varScore++;
+        if (detictionFlag === false) {
+          varScore++;
+          detictionFlag = true;
+        }
       }
     }
       
@@ -205,10 +218,10 @@ const GameBoard = (props) => {
   const boardRef = useRef(null);
 
   const boardStyle = {
-    position: "relative",
-    width: constants.boardWidth + "px",
-    height: constants.boardHeight + "px",
-    border:"solid 1px #000000"
+    position: 'relative',
+    width: constants.boardWidth + 'px',
+    height: constants.boardHeight + 'px',
+    border:'solid 1px #000000'
   };
 
   useEffect(() => {
@@ -329,9 +342,9 @@ const GameBoard = (props) => {
 function ControlPanel(props) {
 
   const panelStyle = {
-    display:"flex",
-    justifyContent: "center",
-    //paddingTop: "0",
+    display:'flex',
+    justifyContent: 'center',
+    //paddingTop: '0',
   }
 
   return (

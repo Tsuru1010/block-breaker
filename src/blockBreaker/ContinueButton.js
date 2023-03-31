@@ -1,4 +1,4 @@
-import { handleContinue } from "./libs.js"
+import { handleContinue } from './libs.js'
 
 function ContinueButton(props) {
   return (

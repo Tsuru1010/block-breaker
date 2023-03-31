@@ -1,5 +1,5 @@
-import RetryButton from "./RetryButton.js"
-import ContinueButton from "./ContinueButton.js"
+import RetryButton from './RetryButton.js'
+import ContinueButton from './ContinueButton.js'
 
 function PauseMenu(props) {
   const menuWrapperPosition = {

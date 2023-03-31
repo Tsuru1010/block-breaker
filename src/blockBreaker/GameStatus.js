@@ -5,7 +5,7 @@ import RetryButton from './RetryButton.js';
 function GameStatus(props) {
   const statusStyle = {
     gridArea: areaName.gameStatus,
-    backgroundColor:"#ffffff"
+    backgroundColor:'#ffffff'
   }
   
   //console.log(props.msec);

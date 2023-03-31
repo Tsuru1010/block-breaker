@@ -4,7 +4,7 @@ import { areaName } from './constants.js';
 function Instruction() {
   const instructionStyle = {
     gridArea: areaName.instruction,
-    margin: "10px"
+    margin: '10px'
   }
 
   return (

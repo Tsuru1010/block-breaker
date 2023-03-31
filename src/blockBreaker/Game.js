@@ -46,17 +46,17 @@ function Game() {
   const [retryFlag, setRetryFlag] = useState(false);
 
   const PCStyle = {
-    display: "grid",
-    gridTemplateColumns: "33% 33% 33%",
-    gridTemplateAreas: `"${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}"\n`
+    display: 'grid',
+    gridTemplateColumns: '33% 33% 33%',
+    gridTemplateAreas: `'${constants.areaName.gameStatus} ${constants.areaName.BaC} ${constants.areaName.instruction}'\n`
   }
 
   const SPStyle = {
-    display: "grid",
-    girdTemplateRows: "auto auto auto",
-    gridTemplateAreas: `"${constants.areaName.BaC}"\n`
-                      +`"${constants.areaName.gameStatus}"\n`
-                      +`"${constants.areaName.instruction}"`
+    display: 'grid',
+    girdTemplateRows: 'auto auto auto',
+    gridTemplateAreas: `'${constants.areaName.BaC}'\n`
+                      +`'${constants.areaName.gameStatus}'\n`
+                      +`'${constants.areaName.instruction}'`
   }
 
   return (

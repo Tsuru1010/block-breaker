@@ -1,4 +1,4 @@
-import { handleRetry } from "./libs.js"
+import { handleRetry } from './libs.js'
 
 function RetryButton(props) {
   return (

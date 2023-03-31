@@ -12,7 +12,6 @@ export function calcBoardWidth() {
       return browserWidth - constants.borderSize*2;
     }
   } else {
-    console.log("error at calcBoardWidth");
     return 320;
   }
 }
