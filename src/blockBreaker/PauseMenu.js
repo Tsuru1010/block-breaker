@@ -1,5 +1,5 @@
-import { handleContinue } from "./libs.js"
 import RetryButton from "./RetryButton.js"
+import ContinueButton from "./ContinueButton.js"
 
 function PauseMenu(props) {
   const menuWrapperPosition = {
@@ -33,11 +33,11 @@ function PauseMenu(props) {
       <div style={menuWrapperStyle}>
         <div style={menuBodyStyle}>
           <p>Pause Menu</p>
-          <button onClick={() => {
-            handleContinue(props.setVelocityX, props.setVelocityY, props.setPauseFlag, props.setPauseFlag)
-          }}>
-            Continue
-          </button>
+          <ContinueButton
+            setVelocityX={props.setVelocityX}
+            setVelocityY={props.setVelocityY}
+            setPauseFlag={props.setPauseFlag}
+          />
           <RetryButton
             setBarX={props.setBarX} 
             setX={props.setX} 
