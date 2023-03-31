@@ -112,7 +112,7 @@ function Slidebar(props) {
 
   useEffect(() => {
     // スライドバーの上面に当たったらy方向の向きを逆にする
-    if (props.y + constants.ballSize/2 >= (constants.boardHeight - constants.barHeight) && props.barX - constants.barWidth/2 <= props.x - constants.ballSize/2 && props.x + constants.ballSize/2 <= props.barX + constants.barWidth/2) {
+    if (props.y + constants.ballSize/2 >= (constants.boardHeight - constants.barHeight) && props.barX - constants.barWidth/2 <= props.x + constants.ballSize/2 && props.x - constants.ballSize/2 <= props.barX + constants.barWidth/2) {
       props.setMoveYflag(false);
     }
   }, [props.x, props.y, props])
