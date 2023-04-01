@@ -1,3 +1,4 @@
+//2023-04-01 いったん完成
 import React, { useState } from 'react';
 import MediaQuery from 'react-responsive';
 import * as constants from './constants.js';
@@ -7,7 +8,6 @@ import Instruction from './Instruction.js';
 import Header from './Header.js';
 import PauseMenu from './PauseMenu.js';
 
-let debugCounter = 0;
 let varPauseFlag = false;
 
 function Game() {
