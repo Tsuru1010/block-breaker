@@ -73,7 +73,7 @@ function Ball(props) {
     left: props.x - constants.ballSize/2,
     width: constants.ballSize + 'px',
     height: constants.ballSize + 'px',
-    backgroundColor:'#000000'
+    backgroundColor:'#ffff00'
   }
 
   return (
@@ -89,7 +89,8 @@ function Slidebar(props) {
     left: props.barX - constants.barWidth/2 + 'px',
     height:constants.barHeight + 'px',
     width:constants.barWidth + 'px',
-    backgroundColor:'#000000'
+    backgroundColor:'#ffffff',
+    border: '#0000ff 3px solid'
   }
   
   
@@ -212,16 +213,14 @@ const GameBoard = (props) => {
   //ブロック存在フラグ（ture:存在，false:ボールと衝突して消失）
   const [blockFlags, setBlockFlags] = useState(blockFlagsArray);
  
-  //ゲーム開始フラグ
-  const [startedFlag, setStartedFlag] = useState(varStartedFlag); 
-
   const boardRef = useRef(null);
 
   const boardStyle = {
     position: 'relative',
     width: constants.boardWidth + 'px',
     height: constants.boardHeight + 'px',
-    border:'solid 1px #000000'
+    border:'solid 3px #ff00ff',
+    backgroundColor:'#000010'
   };
 
   useEffect(() => {
@@ -235,7 +234,7 @@ const GameBoard = (props) => {
       setMoveXflag(true);
       setMoveYflag(false);
       setBlockFlags(blockFlagsArray);
-      setStartedFlag(false);
+      props.setStartedFlag(false);
       props.setRetryFlag(false);
     }
   }, [props.retryFlag])
@@ -246,7 +245,7 @@ const GameBoard = (props) => {
       const initializeVelocity = (e) => {
         let initialVelocity = {x:0, y:0};
 
-        if (startedFlag === true){
+        if (props.startedFlag === true){
           return;
         } else {
           const relativeClickPosition = {
@@ -270,7 +269,7 @@ const GameBoard = (props) => {
           }
   
           varStartedFlag = true;
-          setStartedFlag(varStartedFlag);
+          props.setStartedFlag(varStartedFlag);
           setVelocity(props.setVelocityX, props.setVelocityY, initialVelocity.x, initialVelocity.y);
         }
       }
@@ -322,8 +321,8 @@ const GameBoard = (props) => {
         setMoveXflag={setMoveXflag}
         moveYflag={moveYflag}
         setMoveYflag={setMoveYflag}
-        startedFlag={startedFlag}
-        setStartedFlag={setStartedFlag}
+        startedFlag={props.startedFlag}
+        setStartedFlag={props.setStartedFlag}
       />
       <Slidebar
         x={props.x}
@@ -332,7 +331,7 @@ const GameBoard = (props) => {
         barX={props.barX}
         setBarX={props.setBarX}
         setMoveYflag={setMoveYflag}
-        startedFlag={startedFlag}
+        startedFlag={props.startedFlag}
       />
     </div>
   );
@@ -346,11 +345,14 @@ function ControlPanel(props) {
     justifyContent: 'center',
     //paddingTop: '0',
   }
+  const LRButtonStyle = {
+    ...constants.buttonStyle
+  }
 
   return (
     <div style={panelStyle}>
-      <button onClick={() => {handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>L</button>
-      <button onClick={() => {handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>R</button>
+      <button style={LRButtonStyle} onClick={() => {handleClickL(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>L</button>
+      <button style={LRButtonStyle} onClick={() => {handleClickR(props.barX, props.setBarX, props.startedFlag, props.setX, props.x);}}>R</button>
     </div>
   );
 }
@@ -361,6 +363,9 @@ function BoardAndController(props) {
   const BaCstyle = {
     gridArea:constants.areaName.BaC
   }
+
+  //ゲーム開始フラグ
+  const [startedFlag, setStartedFlag] = useState(varStartedFlag); 
 
   return (
     <div style={BaCstyle}>
@@ -385,6 +390,8 @@ function BoardAndController(props) {
         retryFlag={props.retryFlag}
         setRetryFlag={props.setRetryFlag}
         pauseFlag={props.pauseFlag}
+        startedFlag={startedFlag}
+        setStartedFlag={setStartedFlag}
       />
       <ControlPanel
         x={props.x}
@@ -392,6 +399,7 @@ function BoardAndController(props) {
         setX={props.setX}
         barX={props.barX}
         setBarX={props.setBarX}
+        startedFlag={startedFlag}
       />
     </div>
   );

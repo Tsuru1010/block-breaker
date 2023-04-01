@@ -45,6 +45,13 @@ function Game() {
   //Retryボタンを押した時に真になるフラグ
   const [retryFlag, setRetryFlag] = useState(false);
 
+  const [SPFlag, setSPFlag] = useState(constants.browserWidth <= constants.SPsize);
+
+  const overallStyle = {
+    backgroundColor: '#000000',
+    height: (SPFlag ? 'auto' : document.documentElement.clientHeight + 'px')
+  }
+
   const PCStyle = {
     display: 'grid',
     gridTemplateColumns: '33% 33% 33%',
@@ -60,7 +67,7 @@ function Game() {
   }
 
   return (
-    <div >
+    <div style={overallStyle}>
       <MediaQuery query={`(min-width: ${constants.SPsize}px)`}>
         <Header 
           setPauseFlag={setPauseFlag}

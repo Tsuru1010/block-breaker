@@ -7,7 +7,7 @@ function PauseMenu(props) {
     top: '0px',
     left: '0px',
     width: '100vw',
-    height: document.body.offsetHeight + 'px',
+    height: document.documentElement.offsetHeight + 'px',
     backgroundColor:'rgba(0, 0, 0, 0.5)',
     overflow: 'hidden'
   }
@@ -15,7 +15,7 @@ function PauseMenu(props) {
   const menuWrapperStyle = {
     position:'relative',
     width: '100vw',
-    height: document.body.offsetHeight + 'px'
+    height: document.documentElement.offsetHeight + 'px'
   }
 
   const menuBodyStyle = {

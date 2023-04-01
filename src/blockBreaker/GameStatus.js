@@ -5,7 +5,12 @@ import RetryButton from './RetryButton.js';
 function GameStatus(props) {
   const statusStyle = {
     gridArea: areaName.gameStatus,
-    backgroundColor:'#ffffff'
+    backgroundColor:'#004444',
+    margin:'10px',
+    padding:'10px',
+    border: 'solid 3px #8888ff',
+    borderRadius: '10px',
+    color: '#ffffff'
   }
   
   //console.log(props.msec);
@@ -15,7 +20,7 @@ function GameStatus(props) {
       <p>Score:{props.score}</p>
       {props.gameoverFlag ? 
         <div>
-          <p>game over</p>
+          <h1 style={{color:'#ff0000'}}>game over</h1>
           <RetryButton
             setBarX={props.setBarX} 
             setX={props.setX} 
@@ -31,11 +36,11 @@ function GameStatus(props) {
           />
         </div>
       :
-        <div><br/><br/></div>
+        <div><h1> </h1><br/></div>
       }
       {props.gameclearFlag ?
         <div>
-          <p>game clear!</p>
+          <h1 style={{color:'#ffff00'}}>game clear!</h1>
           <RetryButton
             setBarX={props.setBarX} 
             setX={props.setX} 
@@ -51,7 +56,7 @@ function GameStatus(props) {
           />
         </div> 
       :
-        <div><br/><br/></div>
+        <div><h1> </h1><br/></div>
       }
     </div>
   )
